@@ -72,15 +72,14 @@ const util: Module = {
 			['sh', 'cmd', 'exec']
 		),
 		new CommandHandler('uptime', async (_client, event) => {
-			const seconds = Math.floor(process.uptime())
-			const minutes = Math.floor(seconds / 60)
-			const hours = Math.floor(minutes / 60)
-			const days = Math.floor(hours / 24)
+			let seconds = Math.floor(process.uptime())
+			const hours = Math.floor(seconds / 3600)
+			var minutes = Math.floor((seconds - hours * 3600) / 60)
+			seconds = seconds - hours * 3600 - minutes * 60
 			await event.message.edit({
 				text:
 					event.message.text +
 					' ' +
-					(days > 0 ? `${days > 9 ? days : '0' + days}:` : '') +
 					(hours > 0 ? `${hours > 9 ? hours : '0' + hours}:` : '') +
 					`${minutes > 9 ? minutes : '0' + minutes}:` +
 					`${seconds > 9 ? seconds : '0' + seconds}`
