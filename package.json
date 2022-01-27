@@ -1,0 +1,34 @@
+{
+	"name": "xor",
+	"private": true,
+	"main": "index.js",
+	"license": "LGPL-3.0",
+	"version": "1.0.0-beta.1",
+	"authors": [
+		{
+			"name": "Roj",
+			"email": "ez@roj.im>"
+		}
+	],
+	"scripts": {
+		"test": "ts-node src",
+		"lint": "eslint . --ext .ts",
+		"build": "rimraf dist && tsc",
+		"format": "prettier --write src/**",
+		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
+	},
+	"dependencies": {
+		"big-integer": "^1.6.51",
+		"dotenv": "^14.3.2",
+		"envalid": "^7.2.2",
+		"telegram": "^2.4.3"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.10.1",
+		"@typescript-eslint/parser": "^5.10.1",
+		"eslint": "^8.7.0",
+		"prettier": "^2.5.1",
+		"rimraf": "^3.0.2",
+		"ts-node": "^10.4.0"
+	}
+}
