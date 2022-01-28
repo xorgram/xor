@@ -14,6 +14,7 @@
 		"test": "ts-node src",
 		"lint": "eslint . --ext .ts",
 		"build": "rimraf dist && tsc",
+		"postinstall": "husky install",
 		"format": "prettier --write src/**",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
 	},
