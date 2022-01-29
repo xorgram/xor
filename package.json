@@ -31,8 +31,15 @@
 		"@typescript-eslint/parser": "^5.10.1",
 		"eslint": "^8.7.0",
 		"husky": "^7.0.4",
+		"lint-staged": "^12.3.2",
 		"prettier": "^2.5.1",
 		"rimraf": "^3.0.2",
 		"ts-node": "^10.4.0"
+	},
+	"lint-staged": {
+		"src/**/*.ts": [
+			"eslint --fix --max-warnings=0",
+			"prettier --write"
+		]
 	}
 }
