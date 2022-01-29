@@ -1,6 +1,7 @@
 import { Module } from '../module'
 import { CommandHandler } from '../handlers'
 import { Api } from 'telegram'
+import { escape } from 'html-escaper'
 
 const whois: Module = {
 	handlers: [
@@ -36,9 +37,9 @@ const whois: Module = {
 
 			await event.message.edit({
 				text:
-					`&#9187; <a href="tg://user?id=${user.id}"><b>${user.firstName} ${
-						user.lastName || ''
-					}</b></a>\n` +
+					`&#9187; <a href="tg://user?id=${user.id}"><b>${escape(
+						user.firstName as string
+					)} ${escape(user.lastName || '')}</b></a>\n` +
 					`<b>User ID :</b> <code>${user.id}</code>\n` +
 					`<b>DC ID :</b> ${
 						user.photo && 'dcId' in user.photo
