@@ -28,18 +28,18 @@ export class CommandHandler extends MessageHandler {
 	}
 
 	async handle(client: TelegramClient, event: NewMessageEvent) {
-		const { text } = event.message
+		const { message: text } = event.message
 		const args = text.split('\n')[0].split(/\s/).slice(1)
 		let input = ''
-		const inputType = event.message.text[0]
+		const inputType = event.message.message[0]
 		const reply = await event.message.getReplyMessage()
 		switch (inputType) {
 			case '\\':
 				input = text.split('\n').slice(1).join('\n').trim()
 				break
 			case '>':
-				if (reply && reply.text) {
-					input = reply.text
+				if (reply && reply.message) {
+					input = reply.message
 				}
 		}
 		await this.func(client, event, args, input)
