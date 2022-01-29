@@ -1,14 +1,11 @@
 import { exec, spawn } from 'child_process'
 
 import { zero } from 'big-integer'
-import { Api, TelegramClient, version as telegramVersion } from 'telegram'
-
-import escape from 'html-escape'
+import { Api, version as telegramVersion } from 'telegram'
 
 import { Module } from '../../module'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
-import { EntityLike } from 'telegram/define'
 import { whois } from './helpers'
 
 const util: Module = {
@@ -78,7 +75,7 @@ const util: Module = {
 		new CommandHandler('uptime', async (_client, event) => {
 			let seconds = Math.floor(process.uptime())
 			const hours = Math.floor(seconds / 3600)
-			var minutes = Math.floor((seconds - hours * 3600) / 60)
+			const minutes = Math.floor((seconds - hours * 3600) / 60)
 			seconds = seconds - hours * 3600 - minutes * 60
 			await event.message.edit({
 				text:
