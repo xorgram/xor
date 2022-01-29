@@ -1,8 +1,8 @@
 {
 	"name": "xor",
 	"private": true,
-	"main": "index.js",
 	"license": "LGPL-3.0",
+	"main": "dist/index.js",
 	"version": "1.0.0-beta.1",
 	"authors": [
 		{
