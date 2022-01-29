@@ -1,13 +1,15 @@
 import { exec, spawn } from 'child_process'
 
 import { zero } from 'big-integer'
-import { Api, version as telegramVersion } from 'telegram'
+import { Api, TelegramClient, version as telegramVersion } from 'telegram'
 
 import escape from 'html-escape'
 
-import { Module } from '../module'
-import { version } from '../constants'
-import { CommandHandler } from '../handlers'
+import { Module } from '../../module'
+import { version } from '../../constants'
+import { CommandHandler } from '../../handlers'
+import { EntityLike } from 'telegram/define'
+import { whois } from './helpers'
 
 const util: Module = {
 	handlers: [
@@ -107,54 +109,35 @@ const util: Module = {
 			['v']
 		),
 		new CommandHandler('whois', async (client, event, args) => {
-			let userId: bigInt.BigInteger | string = 'me'
-
-			// In private chats show details of the person you are talking to
-			if (event.isPrivate && event.chatId) {
-				userId = event.chatId
+			let info = ''
+			if (args[0] !== undefined && args[0].length != 0) {
+				const entity = await client.getEntity(args[0])
+				info += (await whois(entity, client)).trim() + '\n\n'
 			}
-
-			/**
-			 * Additionally userid/username can be used
-			 * @example >whois 777000
-			 */
-			if (args.length) {
-				userId = args[0]
+			await event.getInputChat() // https://t.me/gramjschat/25585
+			const chat = await event.getChat()
+			if (chat) {
+				info += '<b>Here</b>' + '\n'
+				info += (await whois(chat, client)).trim() + '\n\n'
 			}
-
-			// Get info of user by replying to his/her message
-			if (!event.isPrivate && event.message.replyToMsgId) {
-				const repliedToMessage = await event.message.getReplyMessage()
-				if (
-					repliedToMessage &&
-					repliedToMessage.fromId &&
-					'userId' in repliedToMessage.fromId
-				) {
-					userId = repliedToMessage.fromId.userId
+			const reply = await event.message.getReplyMessage()
+			if (reply) {
+				const sender = await reply.getSender()
+				if (sender) {
+					info += '<b>Reply</b>' + '\n'
+					info += (await whois(sender, client)).trim() + '\n\n'
+				}
+				if (reply.forward) {
+					const sender = await reply.forward.getSender()
+					if (sender) {
+						info += '<b>Forwarder</b>' + '\n'
+						info += (await whois(sender, client)).trim() + '\n\n'
+					}
 				}
 			}
-
-			const user = await client.getEntity(userId)
-			// In case of id is invalid or id isn't an userid
-			if (!user || !('firstName' in user)) {
-				await event.message.edit({ text: `Invalid ID` })
-				return
-			}
-			const { fullUser } = await client.invoke(
-				new Api.users.GetFullUser({ id: user.id })
-			)
-
+			if (info.length == 0) return
 			await event.message.edit({
-				text:
-					`<a href="tg://user?id=${user.id}"><b>${escape(
-						user.firstName || ''
-					)} ${escape(user.lastName || '')}</b></a>\n` +
-					`<b>ID:</b> <code>${user.id}</code>\n` +
-					`<b>DC:</b> ${
-						user.photo && 'dcId' in user.photo ? user.photo.dcId : 'N/A'
-					}\n` +
-					`<b>Username:</b> ${user.username ? '@' + user.username : 'N/A'}\n` +
-					`<b>Description:</b> ${fullUser.about || 'N/A'}`,
+				text: event.message.text + '\n\n' + info,
 				parseMode: 'html'
 			})
 		})
