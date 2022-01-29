@@ -117,8 +117,7 @@ const util: Module = {
 				const entity = await client.getEntity(args[0])
 				info += (await whois(entity, client)).trim() + '\n\n'
 			}
-			await event.getInputChat() // https://t.me/gramjschat/25585
-			const chat = await event.getChat()
+			const chat = await event.message.getChat()
 			if (chat) {
 				info += '<b>Here</b>' + '\n'
 				info += (await whois(chat, client)).trim() + '\n\n'
