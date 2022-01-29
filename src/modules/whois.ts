@@ -37,17 +37,15 @@ const whois: Module = {
 
 			await event.message.edit({
 				text:
-					`&#9187; <a href="tg://user?id=${user.id}"><b>${escape(
+					`<a href="tg://user?id=${user.id}"><b>${escape(
 						user.firstName as string
 					)} ${escape(user.lastName || '')}</b></a>\n` +
-					`<b>User ID :</b> <code>${user.id}</code>\n` +
-					`<b>DC ID :</b> ${
-						user.photo && 'dcId' in user.photo
-							? user.photo.dcId
-							: 'Profile photo required to check'
+					`<b>ID:</b> <code>${user.id}</code>\n` +
+					`<b>DC:</b> ${
+						user.photo && 'dcId' in user.photo ? user.photo.dcId : 'N/A'
 					}\n` +
-					`<b>Username :</b> ${user.username ? '@' + user.username : ''}\n` +
-					`<b>Bio :</b> ${fullUser.about || 'Null'}`,
+					`<b>Username:</b> ${user.username ? '@' + user.username : 'N/A'}\n` +
+					`<b>Description:</b> ${fullUser.about || 'N/A'}`,
 				parseMode: 'html'
 			})
 		})
