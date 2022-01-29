@@ -37,7 +37,9 @@
 		"ts-node": "^10.4.0"
 	},
 	"lint-staged": {
-		"*.ts": "eslint --cache --fix",
-		"*.src/**": "prettier --write"
+		"src/**/*.ts": [
+			"eslint --fix --max-warnings=0",
+			"prettier --write"
+		]
 	}
 }
