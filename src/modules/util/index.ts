@@ -6,7 +6,7 @@ import { Api, version as telegramVersion } from 'telegram'
 import { Module, wrap } from '../../module'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
-import { whois } from './helpers'
+import { pre, whois } from './helpers'
 
 const util: Module = {
 	handlers: [
@@ -33,9 +33,15 @@ const util: Module = {
 						wrap(async () => {
 							await displayPid
 							if (stdout.length > 0 && stdout.length <= 4096)
-								await event.message.reply({ message: stdout })
+								await event.message.reply({
+									message: pre(stdout),
+									parseMode: 'html'
+								})
 							if (stderr.length > 0 && stderr.length <= 4096)
-								await event.message.reply({ message: stderr })
+								await event.message.reply({
+									message: pre(stderr),
+									parseMode: 'html'
+								})
 						})
 					}).on('exit', code => {
 						wrap(async () => {
@@ -62,10 +68,18 @@ const util: Module = {
 						}
 						const stdout = stdoutChunks.map(String).join('')
 						const stderr = stderrChunks.map(String).join('')
-						if (stdout.length > 0 && stdout.length <= 4096)
-							await event.message.reply({ message: stdout })
-						if (stderr.length > 0 && stderr.length <= 4096)
-							await event.message.reply({ message: stderr })
+						if (stdout.length > 0 && stdout.length <= 4096) {
+							await event.message.reply({
+								message: pre(stdout),
+								parseMode: 'html'
+							})
+						}
+						if (stderr.length > 0 && stderr.length <= 4096) {
+							await event.message.reply({
+								message: pre(stderr),
+								parseMode: 'html'
+							})
+						}
 					})
 				})
 				proc.stdout.on('data', c => stdoutChunks.push(c))
