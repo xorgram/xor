@@ -3,7 +3,7 @@ import { exec, spawn } from 'child_process'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
 
-import { escape } from 'html-escaper'
+import escape from 'html-escape'
 
 import { Module } from '../module'
 import { version } from '../constants'

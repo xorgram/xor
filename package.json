@@ -22,11 +22,11 @@
 		"big-integer": "^1.6.51",
 		"dotenv": "^14.3.2",
 		"envalid": "^7.2.2",
-		"html-escaper": "^3.0.3",
+		"html-escape": "^2.0.0",
 		"telegram": "^2.4.3"
 	},
 	"devDependencies": {
-		"@types/html-escaper": "^3.0.0",
+		"@types/html-escape": "^2.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.10.1",
 		"@typescript-eslint/parser": "^5.10.1",
 		"eslint": "^8.7.0",
