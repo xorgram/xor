@@ -7,6 +7,14 @@ export interface Module {
 	handlers: Handler[]
 }
 
+export async function wrap(func: () => Promise<void>) {
+	try {
+		await func()
+	} catch (err) {
+		console.error(err)
+	}
+}
+
 export function installModules(client: TelegramClient, modules: Module[]) {
 	async function eventHandler(event: NewMessageEvent) {
 		for (const { handlers } of modules)

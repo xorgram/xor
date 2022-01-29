@@ -3,7 +3,7 @@ import { exec, spawn } from 'child_process'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
 
-import { Module } from '../../module'
+import { Module, wrap } from '../../module'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
 import { whois } from './helpers'
@@ -29,18 +29,22 @@ const util: Module = {
 				let pidDisplayed = (_?: unknown) => {} // eslint-disable-line
 				const displayPid = new Promise(r => (pidDisplayed = r))
 				if (input.length == 0) {
-					const proc = exec(text, async (err, stdout, stderr) => {
-						await displayPid
-						if (stdout.length > 0 && stdout.length <= 4096)
-							await event.message.reply({ message: stdout })
-						if (stderr.length > 0 && stderr.length <= 4096)
-							await event.message.reply({ message: stderr })
-					}).on('exit', async code => {
-						await displayPid
-						if (code) {
-							text += '\n' + `Exited with code ${code}.`
-							await event.message.edit({ text })
-						}
+					const proc = exec(text, (_err, stdout, stderr) => {
+						wrap(async () => {
+							await displayPid
+							if (stdout.length > 0 && stdout.length <= 4096)
+								await event.message.reply({ message: stdout })
+							if (stderr.length > 0 && stderr.length <= 4096)
+								await event.message.reply({ message: stderr })
+						})
+					}).on('exit', code => {
+						wrap(async () => {
+							await displayPid
+							if (code) {
+								text += '\n' + `Exited with code ${code}.`
+								await event.message.edit({ text })
+							}
+						})
 					})
 					text = `[${proc.pid}]` + text
 					await event.message.edit({ text })
@@ -49,18 +53,20 @@ const util: Module = {
 				}
 				const stdoutChunks = new Array<Buffer>()
 				const stderrChunks = new Array<Buffer>()
-				const proc = spawn(command, args).on('close', async code => {
-					await displayPid
-					if (code != null) {
-						text += '\n' + `Exited with code ${code}.`
-						await event.message.edit({ text })
-					}
-					const stdout = stdoutChunks.map(String).join('')
-					const stderr = stderrChunks.map(String).join('')
-					if (stdout.length > 0 && stdout.length <= 4096)
-						await event.message.reply({ message: stdout })
-					if (stderr.length > 0 && stderr.length <= 4096)
-						await event.message.reply({ message: stderr })
+				const proc = spawn(command, args).on('close', code => {
+					wrap(async () => {
+						await displayPid
+						if (code != null) {
+							text += '\n' + `Exited with code ${code}.`
+							await event.message.edit({ text })
+						}
+						const stdout = stdoutChunks.map(String).join('')
+						const stderr = stderrChunks.map(String).join('')
+						if (stdout.length > 0 && stdout.length <= 4096)
+							await event.message.reply({ message: stdout })
+						if (stderr.length > 0 && stderr.length <= 4096)
+							await event.message.reply({ message: stderr })
+					})
 				})
 				proc.stdout.on('data', c => stdoutChunks.push(c))
 				proc.stderr.on('data', c => stderrChunks.push(c))
