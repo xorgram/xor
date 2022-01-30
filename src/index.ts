@@ -12,6 +12,7 @@ const client = new TelegramClient(
 	env.APP_HASH,
 	{}
 )
+client.setParseMode(undefined)
 client.setLogLevel(LogLevel.NONE)
 installModules(client, modules)
 client.start({ botAuthToken: '' })
