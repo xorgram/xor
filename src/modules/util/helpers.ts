@@ -54,3 +54,5 @@ export async function whois(
 	if (escape_) whois = escape(whois)
 	return whois
 }
+
+export const pre = (string: string) => '<pre>' + escape(string) + '</pre>'
