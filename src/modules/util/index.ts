@@ -90,7 +90,9 @@ const util: Module = {
 				proc.stdin.write(input)
 				proc.stdin.end()
 			},
-			['sh', 'cmd', 'exec']
+			{
+				aliases: ['sh', 'cmd', 'exec']
+			}
 		),
 		new CommandHandler('uptime', async (_client, event) => {
 			let seconds = Math.floor(process.uptime())
@@ -123,7 +125,7 @@ const util: Module = {
 						telegramVersion
 				})
 			},
-			['v']
+			{ aliases: ['v'] }
 		),
 		new CommandHandler('whois', async (client, event, args) => {
 			let info = ''
