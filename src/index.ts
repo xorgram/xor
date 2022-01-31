@@ -1,9 +1,10 @@
+import { join } from 'path'
+
 import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions'
 import { LogLevel } from 'telegram/extensions/Logger'
 
 import env from './env'
-import { load } from './modules'
 import { installModules } from './module'
 
 const client = new TelegramClient(
@@ -14,7 +15,7 @@ const client = new TelegramClient(
 )
 client.setLogLevel(LogLevel.NONE)
 async function start() {
-	installModules(client, await load())
+	await installModules(client, join(__dirname, 'modules'))
 	await client.start({ botAuthToken: '' })
 }
 start()
