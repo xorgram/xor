@@ -3,12 +3,14 @@ import { exec, spawn } from 'child_process'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
 
-import { Module, wrap } from '../../module'
+import { Module } from '../../module'
+import { wrap } from '../../helpers'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
 import { pre, whois } from './helpers'
 
 const util: Module = {
+	name: 'util',
 	handlers: [
 		new CommandHandler('ping', async (client, event) => {
 			const before = Date.now()
