@@ -5,7 +5,8 @@ import { StringSession } from 'telegram/sessions'
 import { LogLevel } from 'telegram/extensions/Logger'
 
 import env from './env'
-import { installModules } from './module'
+import { ModuleManager } from './module_manager'
+import { NewMessage } from 'telegram/events'
 
 const client = new TelegramClient(
 	new StringSession(env.STRING_SESSION),
@@ -13,9 +14,14 @@ const client = new TelegramClient(
 	env.APP_HASH,
 	{}
 )
+const manager = new ModuleManager(client)
 client.setLogLevel(LogLevel.NONE)
+client.addEventHandler(manager.handler, new NewMessage({}))
 async function start() {
-	await installModules(client, join(__dirname, 'modules'))
+	manager.installMultiple(
+		await ModuleManager.directory(join(__dirname, 'modules')),
+		false
+	)
 	await client.start({ botAuthToken: '' })
 }
 start()
