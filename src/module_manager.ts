@@ -38,7 +38,7 @@ export class ModuleManager {
 		this.modules.set(module.name, [module, disableable])
 	}
 
-	installMultiple(disableable: boolean, ...modules: Module[]) {
+	installMultiple(modules: Module[], disableable: boolean) {
 		for (const module of modules) {
 			this.install(module, disableable)
 		}
@@ -48,7 +48,7 @@ export class ModuleManager {
 		return this.modules.delete(name)
 	}
 
-	uninstallMultiple(...names: string[]) {
+	uninstallMultiple(names: string[]) {
 		return names.map(this.uninstall)
 	}
 
@@ -59,7 +59,7 @@ export class ModuleManager {
 				disableables.push(name)
 			}
 		}
-		this.uninstallMultiple(...disableables)
+		this.uninstallMultiple(disableables)
 	}
 
 	static async file(spec: string) {

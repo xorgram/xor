@@ -19,8 +19,8 @@ client.setLogLevel(LogLevel.NONE)
 client.addEventHandler(manager.handler, new NewMessage({}))
 async function start() {
 	manager.installMultiple(
-		false,
-		...(await ModuleManager.directory(join(__dirname, 'modules')))
+		await ModuleManager.directory(join(__dirname, 'modules')),
+		false
 	)
 	await client.start({ botAuthToken: '' })
 }
