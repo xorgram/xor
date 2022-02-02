@@ -20,7 +20,9 @@ client.setLogLevel(LogLevel.NONE)
 async function start() {
 	try {
 		await fs.mkdir(join(__dirname, 'externals'))
-	} catch (err) {}
+	} catch (_err) {
+		//
+	}
 	manager.installMultiple(
 		await ModuleManager.directory(join(__dirname, 'modules')),
 		false
