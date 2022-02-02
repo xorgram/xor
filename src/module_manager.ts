@@ -1,13 +1,121 @@
 import { join } from 'path'
-import { readdirSync } from 'fs'
+import { promises as fs } from 'fs'
 
-import { TelegramClient } from 'telegram'
+import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
 
 import { Module, isModule } from './module'
+import { CommandHandler } from './handlers'
+
+export function managerModule(manager: ModuleManager): Module {
+	return {
+		name: 'manager',
+		handlers: [
+			new CommandHandler('install', async (client, event) => {
+				const reply = await event.message.getReplyMessage()
+				if (!reply) return
+				const { media } = reply
+				if (
+					!(media instanceof Api.MessageMediaDocument) ||
+					!(media.document instanceof Api.Document) ||
+					media.document.mimeType != 'application/javascript' ||
+					media.document.size > 5000
+				)
+					return
+				const result = await client.downloadMedia(media, {})
+				const spec = join(
+					__dirname,
+					'externals',
+					'.' + media.document.id + '.js'
+				)
+				await fs.writeFile(spec, result)
+				let module
+				try {
+					module = await ModuleManager.file(spec)
+				} catch (err) {
+					await event.message.edit({
+						text:
+							event.message.text +
+							'\n' +
+							'The replied file is not a valid module.'
+					})
+					return
+				}
+				if (manager.modules.has(module.name)) {
+					await event.message.edit({
+						text: event.message.text + '\n' + 'Module already installed.'
+					})
+					return
+				}
+				await fs.rename(spec, join(__dirname, 'externals', module.name + '.js'))
+				manager.install(module, true)
+				await event.message.edit({
+					text: event.message.text + '\n' + 'Module installed.'
+				})
+			}),
+			new CommandHandler('uninstall', async (_client, event, args) => {
+				let uninstalled = 0
+				for (const arg of args) {
+					const spec = join(__dirname, 'externals', arg + '.js')
+					try {
+						await fs.rm(spec)
+						manager.uninstall(arg)
+						uninstalled++
+					} catch (err) {
+						//
+					}
+				}
+				await event.message.edit({
+					text:
+						event.message.text +
+						'\n' +
+						`${uninstalled <= 0 ? 'No' : uninstalled} module${
+							uninstalled == 1 ? '' : 's'
+						} uninstalled.`
+				})
+			}),
+			new CommandHandler('disable', async (_client, event, args) => {
+				if (args.length == 0) return
+				let disabled = 0
+				for (const arg of args) {
+					if (!manager.disabled.has(arg)) {
+						manager.disabled.add(arg)
+						disabled++
+					}
+				}
+				await event.message.edit({
+					text:
+						event.message.text +
+						'\n' +
+						`${disabled <= 0 ? 'No' : disabled} module${
+							disabled == 1 ? '' : 's'
+						} disabled.`
+				})
+			}),
+			new CommandHandler('enable', async (_client, event, args) => {
+				if (args.length == 0) return
+				let enabled = 0
+				for (const arg of args) {
+					if (manager.disabled.has(arg)) {
+						manager.disabled.delete(arg)
+						enabled++
+					}
+				}
+				await event.message.edit({
+					text:
+						event.message.text +
+						'\n' +
+						`${enabled <= 0 ? 'No' : enabled} module${
+							enabled == 1 ? '' : 's'
+						} enabled.`
+				})
+			})
+		]
+	}
+}
 
 export class ModuleManager {
-	private modules = new Map<string, [Module, boolean]>()
+	modules = new Map<string, [Module, boolean]>()
 
 	constructor(
 		private client: TelegramClient,
@@ -72,7 +180,7 @@ export class ModuleManager {
 
 	static async directory(path: string) {
 		const modules = new Array<Module>()
-		const files = readdirSync(path)
+		const files = await fs.readdir(path)
 		for (let file of files) {
 			if (file.startsWith('.')) {
 				continue
