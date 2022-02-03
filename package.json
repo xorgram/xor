@@ -1,6 +1,5 @@
 {
-	"name": "xor",
-	"private": true,
+	"name": "@xorgram/xor",
 	"version": "0.0.1",
 	"license": "LGPL-3.0",
 	"main": "dist/index.js",
