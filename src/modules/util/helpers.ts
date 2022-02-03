@@ -51,7 +51,9 @@ export async function whois(
 	} else {
 		whois += 'Could not resolve whois'
 	}
-	if (escape_) whois = escape(whois)
+	if (escape_) {
+		whois = escape(whois)
+	}
 	return whois
 }
 

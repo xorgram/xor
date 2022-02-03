@@ -30,9 +30,13 @@ export class CommandHandler extends MessageHandler {
 	}
 
 	async check(client: TelegramClient, event: NewMessageEvent) {
-		if (!(await super.check(client, event))) return false
+		if (!(await super.check(client, event))) {
+			return false
+		}
 		const { text } = event.message
-		if (!['\\', '>'].includes(text[0])) return false
+		if (!['\\', '>'].includes(text[0])) {
+			return false
+		}
 		const command = text.split(/\s/)[0].slice(1)
 		return this.name == command || !!this.opts?.aliases?.includes(command)
 	}

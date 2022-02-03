@@ -16,11 +16,11 @@
 	],
 	"scripts": {
 		"test": "ts-node src",
-		"lint": "eslint . --ext .ts --max-warnings=0",
-		"fix": "npm run lint -- --fix",
 		"build": "rimraf dist && tsc",
+		"fix": "npm run lint -- --fix",
 		"postinstall": "husky install",
 		"format": "prettier --write src/**/*.ts",
+		"lint": "eslint . --ext .ts --max-warnings=0",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
 	},
 	"dependencies": {
@@ -35,6 +35,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.10.1",
 		"@typescript-eslint/parser": "^5.10.1",
 		"eslint": "^8.7.0",
+		"eslint-config-prettier": "^8.3.0",
 		"husky": "^7.0.4",
 		"lint-staged": "^12.3.2",
 		"prettier": "^2.5.1",
