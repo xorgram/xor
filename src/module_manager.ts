@@ -140,6 +140,13 @@ export class ModuleManager {
 						await handler.handle(this.client, event)
 					} catch (err) {
 						console.error(err)
+						try {
+							let message = String(err)
+							message = message.length <= 1000 ? message : 'An error occurred.'
+							await event.message.reply({ message })
+						} catch (err) {
+							//
+						}
 					}
 				}
 			}

@@ -34,7 +34,7 @@ const util: Module = {
 				const displayPid = new Promise(r => (pidDisplayed = r))
 				if (input.length == 0) {
 					const proc = exec(text, (_err, stdout, stderr) => {
-						wrap(async () => {
+						wrap(event, async () => {
 							await displayPid
 							if (stdout.length > 0 && stdout.length <= 4096) {
 								await event.message.reply({
@@ -50,7 +50,7 @@ const util: Module = {
 							}
 						})
 					}).on('exit', code => {
-						wrap(async () => {
+						wrap(event, async () => {
 							await displayPid
 							if (code) {
 								text += '\n' + `Exited with code ${code}.`
@@ -66,7 +66,7 @@ const util: Module = {
 				const stdoutChunks = new Array<Buffer>()
 				const stderrChunks = new Array<Buffer>()
 				const proc = spawn(command, args).on('close', code => {
-					wrap(async () => {
+					wrap(event, async () => {
 						await displayPid
 						if (code != null) {
 							text += '\n' + `Exited with code ${code}.`
