@@ -23,4 +23,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: TypeScript Build Test
-        run: npm run build --noEmit
+        run: npm run build
