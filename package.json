@@ -16,10 +16,11 @@
 	],
 	"scripts": {
 		"test": "ts-node src",
-		"lint": "eslint . --ext .ts",
+		"lint": "eslint . --ext .ts --max-warnings=0",
+		"fix": "npm run lint -- --fix",
 		"build": "rimraf dist && tsc",
 		"postinstall": "husky install",
-		"format": "prettier --write src/**",
+		"format": "prettier --write src/**/*.ts",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
 	},
 	"dependencies": {
@@ -42,8 +43,8 @@
 	},
 	"lint-staged": {
 		"src/**/*.ts": [
-			"eslint --fix --max-warnings=0",
-			"prettier --write"
+			"npm run lint",
+			"npm run format"
 		]
 	}
 }
