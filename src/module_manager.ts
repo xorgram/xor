@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 
 import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
+import escape from 'html-escape'
 
 import { Module, isModule } from './module'
 import { CommandHandler } from './handlers'
@@ -116,8 +117,85 @@ export function managerModule(manager: ModuleManager): Module {
 							enabled == 1 ? '' : 's'
 						} enabled.`
 				})
+			}),
+			new CommandHandler('modules', async (_client, event) => {
+				const all = Array.from(manager.modules.values())
+				const nonDisableables = all
+					.filter(([, disableable]) => !disableable)
+					.map(([module]) => module.name)
+				const installed = all
+					.filter(([, disableable]) => disableable)
+					.map(([module]) => module.name)
+				let message = '**Built-in**\n'
+				for (const module of nonDisableables) {
+					message += escape(module) + '\n'
+				}
+				message += '\n**Installed**\n'
+				if (installed.length == 0) {
+					message += 'No modules installed.'
+				} else {
+					for (const module of installed) {
+						message += escape(module) + '\n'
+					}
+				}
+				await event.message.reply({ message })
+			}),
+			new CommandHandler('help', async (_client, event, args) => {
+				const name = args[0]
+				if (!name) {
+					await event.message.edit({
+						text:
+							event.message.text + '\n' + 'Pass a module name as an argument.'
+					})
+					return
+				}
+				const module = manager.modules.get(name)
+				if (!module) {
+					await event.message.edit({
+						text: event.message.text + '\n' + 'This module is not installed.'
+					})
+					return
+				}
+				if (!module[0].help) {
+					await event.message.edit({
+						text: event.message.text + '\n' + 'This module has no help.'
+					})
+					return
+				}
+				await event.message.reply({ message: module[0].help })
 			})
-		]
+		],
+		help: `
+**Introduction**
+
+The module manager lets you list the installed modules, get help for them and install external modules.
+
+**Commands**
+
+- install
+
+Installs an external module from the replied module file.
+
+- uninstall
+
+Uninstalls one or more external modules.
+
+- disable
+
+Disables one or more external modules.
+
+- enable
+
+Enables one or more external modules.
+
+- modules
+
+Lists the installed modules.
+
+- help
+
+Sends the help message of a module if existing.
+		`
 	}
 }
 
