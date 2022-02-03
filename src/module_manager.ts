@@ -13,15 +13,18 @@ export function managerModule(manager: ModuleManager): Module {
 		handlers: [
 			new CommandHandler('install', async (client, event) => {
 				const reply = await event.message.getReplyMessage()
-				if (!reply) return
+				if (!reply) {
+					return
+				}
 				const { media } = reply
 				if (
 					!(media instanceof Api.MessageMediaDocument) ||
 					!(media.document instanceof Api.Document) ||
 					media.document.mimeType != 'application/javascript' ||
 					media.document.size > 5000
-				)
+				) {
 					return
+				}
 				const result = await client.downloadMedia(media, {})
 				const spec = join(
 					__dirname,
@@ -75,7 +78,9 @@ export function managerModule(manager: ModuleManager): Module {
 				})
 			}),
 			new CommandHandler('disable', async (_client, event, args) => {
-				if (args.length == 0) return
+				if (args.length == 0) {
+					return
+				}
 				let disabled = 0
 				for (const arg of args) {
 					if (!manager.disabled.has(arg)) {
@@ -93,7 +98,9 @@ export function managerModule(manager: ModuleManager): Module {
 				})
 			}),
 			new CommandHandler('enable', async (_client, event, args) => {
-				if (args.length == 0) return
+				if (args.length == 0) {
+					return
+				}
 				let enabled = 0
 				for (const arg of args) {
 					if (manager.disabled.has(arg)) {
