@@ -8,7 +8,7 @@ on:
     branches-ignore: [gh-pages]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '#skip-ts')"
     strategy:
