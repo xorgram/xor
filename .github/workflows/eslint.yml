@@ -10,7 +10,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '#skip-ts')"
+    if: "!contains(github.event.head_commit.message, '#skip-lint')"
     strategy:
       matrix:
         node-version: [16.x]
