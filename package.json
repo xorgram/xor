@@ -20,7 +20,7 @@
 		"fix": "npm run lint -- --fix",
 		"build": "rimraf dist && tsc",
 		"postinstall": "husky install",
-		"format": "prettier --write src/**/*.ts",
+		"format": "prettier --write src/",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
 	},
 	"dependencies": {
