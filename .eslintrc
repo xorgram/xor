@@ -9,6 +9,10 @@
 		"prettier"
 	],
 	"rules": {
-		"curly": [1, "all"]
+		"curly": [1, "all"],
+		"@typescript-eslint/no-unused-vars": [
+			1,
+			{ "vars": "all", "args": "after-used", "argsIgnorePattern": "^_" }
+		]
 	}
 }
