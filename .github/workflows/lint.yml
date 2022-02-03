@@ -1,4 +1,4 @@
-name: TypeScript Build
+name: Lint
 
 on:
   push:
@@ -8,9 +8,9 @@ on:
     branches-ignore: [gh-pages]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '#skip-build')"
+    if: "!contains(github.event.head_commit.message, '#skip-lint')"
     strategy:
       matrix:
         node-version: [16.x]
@@ -22,5 +22,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm ci
-      - name: TypeScript Build Test
-        run: npm run build
+      - name: Lint
+        run: npm run lint
