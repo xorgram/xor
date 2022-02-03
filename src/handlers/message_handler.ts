@@ -18,12 +18,21 @@ export class MessageHandler extends Handler {
 	}
 
 	async check(_client: TelegramClient, event: NewMessageEvent) {
-		if (this.out !== undefined && this.out !== event.message.out) return false
-		if (!event.message.out) return false
-		if (this.scope !== undefined && this.scope !== 'all')
-			if (this.scope == 'group' && !event.isGroup) return false
-			else if (this.scope == 'private' && !event.isPrivate) return false
-			else if (!event.isChannel) return false
+		if (this.out !== undefined && this.out !== event.message.out) {
+			return false
+		}
+		if (!event.message.out) {
+			return false
+		}
+		if (this.scope !== undefined && this.scope !== 'all') {
+			if (this.scope == 'group' && !event.isGroup) {
+				return false
+			} else if (this.scope == 'private' && !event.isPrivate) {
+				return false
+			} else if (!event.isChannel) {
+				return false
+			}
+		}
 		return true
 	}
 

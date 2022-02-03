@@ -23,7 +23,9 @@ const util: Module = {
 		new CommandHandler(
 			'shell',
 			async (_client, event, args, input) => {
-				if (args.length < 1) return
+				if (args.length < 1) {
+					return
+				}
 				const command = args[0]
 				args = args.slice(1)
 				let { text } = event.message
@@ -34,16 +36,18 @@ const util: Module = {
 					const proc = exec(text, (_err, stdout, stderr) => {
 						wrap(async () => {
 							await displayPid
-							if (stdout.length > 0 && stdout.length <= 4096)
+							if (stdout.length > 0 && stdout.length <= 4096) {
 								await event.message.reply({
 									message: pre(stdout),
 									parseMode: 'html'
 								})
-							if (stderr.length > 0 && stderr.length <= 4096)
+							}
+							if (stderr.length > 0 && stderr.length <= 4096) {
 								await event.message.reply({
 									message: pre(stderr),
 									parseMode: 'html'
 								})
+							}
 						})
 					}).on('exit', code => {
 						wrap(async () => {
@@ -155,7 +159,9 @@ const util: Module = {
 					}
 				}
 			}
-			if (info.length == 0) return
+			if (info.length == 0) {
+				return
+			}
 			await event.message.edit({
 				text: event.message.text + '\n\n' + info,
 				parseMode: 'html'
