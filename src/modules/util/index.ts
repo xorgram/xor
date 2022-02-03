@@ -1,7 +1,9 @@
 import { exec, spawn } from 'child_process'
 
+import { VM } from 'vm2'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
+import { CustomFile } from 'telegram/client/uploads'
 
 import { Module } from '../../module'
 import { wrap } from '../../helpers'
@@ -165,6 +167,28 @@ const util: Module = {
 			await event.message.edit({
 				text: event.message.text + '\n\n' + info,
 				parseMode: 'html'
+			})
+		}),
+		new CommandHandler('eval', async (client, event, _args, input) => {
+			const vm = new VM({ sandbox: { client, event, Api } })
+			const result = String(vm.run(input))
+			if (result.length <= 4096) {
+				await event.message.reply({
+					message: result,
+					parseMode: undefined,
+					formattingEntities: [
+						new Api.MessageEntityPre({
+							offset: 0,
+							length: result.length,
+							language: ''
+						})
+					]
+				})
+				return
+			}
+			const buffer = Buffer.from(result)
+			await event.message.reply({
+				file: new CustomFile('result.txt', buffer.length, '', buffer)
 			})
 		})
 	]
