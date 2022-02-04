@@ -176,7 +176,11 @@ const util: Module = {
 			const result = String(
 				await vm.run(`module.exports = (async () => {\n${input}\n})()`)
 			)
-			if (result.length <= 4096) {
+			if (result.length == 0) {
+				await event.message.edit({
+					text: event.message.text + '\n' + 'No output.'
+				})
+			} else if (result.length <= 4096) {
 				await event.message.reply({
 					message: result,
 					parseMode: undefined,
@@ -188,12 +192,12 @@ const util: Module = {
 						})
 					]
 				})
-				return
+			} else {
+				const buffer = Buffer.from(result)
+				await event.message.reply({
+					file: new CustomFile('result.txt', buffer.length, '', buffer)
+				})
 			}
-			const buffer = Buffer.from(result)
-			await event.message.reply({
-				file: new CustomFile('result.txt', buffer.length, '', buffer)
-			})
 		})
 	],
 	help: `
