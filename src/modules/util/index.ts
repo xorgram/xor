@@ -1,6 +1,6 @@
 import { exec, spawn } from 'child_process'
 
-import { VM } from 'vm2'
+import { NodeVM } from 'vm2'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
 import { CustomFile } from 'telegram/client/uploads'
@@ -170,8 +170,12 @@ const util: Module = {
 			})
 		}),
 		new CommandHandler('eval', async (client, event, _args, input) => {
-			const vm = new VM({ sandbox: { client, event, Api } })
-			const result = String(vm.run(input))
+			const message = event.message
+			const reply = await event.message.getReplyMessage()
+			const vm = new NodeVM({ sandbox: { client, event, message, reply, Api } })
+			const result = String(
+				await vm.run(`module.exports = (async () => {\n${input}\n})()`)
+			)
 			if (result.length <= 4096) {
 				await event.message.reply({
 					message: result,
@@ -221,7 +225,7 @@ Fetches and displays basic information about the current chat, the provided iden
 
 - eval
 
-Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client\`, the \`NewMessageEvent\` as \`event\` and the GramJS API namespace as \`Api\`.
+Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client\`, the \`NewMessageEvent\` as \`event\`, the message as \`event\`, the replied message as \`reply\` and the GramJS API namespace as \`Api\`.
 
 `
 }
