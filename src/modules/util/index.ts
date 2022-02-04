@@ -191,7 +191,39 @@ const util: Module = {
 				file: new CustomFile('result.txt', buffer.length, '', buffer)
 			})
 		})
-	]
+	],
+	help: `
+**Introduction**
+
+The util module includes some useful commands to interact with the system and get basic information of the surrounding.
+
+**Commands**
+
+- ping
+
+Tells how much a ping of Telegram servers takes.
+
+- shell, sh, cmd, exec
+
+Runs a shell command and sends its output. Any input will be passed to the stdin of the process.
+
+- uptime
+
+Displays the uptime of the bot in (hh:)mm:ss format.
+
+- version, v
+
+Displays the versions of Xor, GramJS and Node.
+
+- whois
+
+Fetches and displays basic information about the current chat, the provided identifier as the first argument and/or the replied message. The provided identifier can be a username, a phone number, a user/chat ID or a chat invite ID.
+
+- eval
+
+Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client\`, the \`NewMessageEvent\` as \`event\` and the GramJS API namespace as \`Api\`.
+
+`
 }
 
 export default util
