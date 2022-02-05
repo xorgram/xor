@@ -1,0 +1,5 @@
+.*rc
+tsconfig.json
+src/
+.husky/
+.github/
