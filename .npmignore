@@ -3,3 +3,4 @@ tsconfig.json
 src/
 .husky/
 .github/
+.env
