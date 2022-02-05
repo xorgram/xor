@@ -15,7 +15,7 @@
 		}
 	],
 	"scripts": {
-		"test": "ts-node src",
+		"test": "ts-node src/start",
 		"build": "rimraf dist && tsc",
 		"fix": "npm run lint -- --fix",
 		"postinstall": "husky install",
