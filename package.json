@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"license": "LGPL-3.0",
 	"main": "dist/index.js",
+	"bin": "bin/index.js",
 	"authors": [
 		{
 			"name": "Roj",
