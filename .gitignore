@@ -1,4 +1,4 @@
 .env
 dist/
+externals/
 node_modules/
-src/externals
