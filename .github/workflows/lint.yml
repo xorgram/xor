@@ -2,10 +2,8 @@ name: Lint
 
 on:
   push:
-    branches: [main]
-    paths-ignore: ['**.md']
-  pull_request:
     branches-ignore: [gh-pages]
+    paths-ignore: ['**.md']
 
 jobs:
   lint:
