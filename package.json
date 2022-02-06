@@ -2,8 +2,8 @@
 	"name": "@xorgram/xor",
 	"version": "0.0.1",
 	"license": "LGPL-3.0",
-	"main": "dist/index.js",
-	"bin": "bin/index.js",
+	"main": "dist",
+	"bin": "bin",
 	"authors": [
 		{
 			"name": "Roj",
@@ -15,10 +15,10 @@
 		}
 	],
 	"scripts": {
-		"test": "ts-node src/start",
 		"prepare": "husky install",
 		"build": "rimraf dist && tsc",
 		"fix": "npm run lint -- --fix",
+		"test": "npm run build && node bin",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"lint": "eslint . --ext .ts --max-warnings=0",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts"
@@ -40,8 +40,7 @@
 		"husky": "^7.0.4",
 		"lint-staged": "^12.3.2",
 		"prettier": "^2.5.1",
-		"rimraf": "^3.0.2",
-		"ts-node": "^10.4.0"
+		"rimraf": "^3.0.2"
 	},
 	"lint-staged": {
 		"src/**/*.ts": [
