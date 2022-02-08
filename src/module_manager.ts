@@ -27,11 +27,7 @@ export function managerModule(manager: ModuleManager): Module {
 					return
 				}
 				const result = await client.downloadMedia(media, {})
-				const spec = join(
-					__dirname,
-					'externals',
-					'.' + media.document.id + '.js'
-				)
+				const spec = join('externals', '.' + media.document.id + '.js')
 				await fs.writeFile(spec, result)
 				let module
 				try {
@@ -51,7 +47,7 @@ export function managerModule(manager: ModuleManager): Module {
 					})
 					return
 				}
-				await fs.rename(spec, join(__dirname, 'externals', module.name + '.js'))
+				await fs.rename(spec, join('externals', module.name + '.js'))
 				manager.install(module, true)
 				await event.message.edit({
 					text: event.message.text + '\n' + 'Module installed.'
@@ -60,7 +56,7 @@ export function managerModule(manager: ModuleManager): Module {
 			new CommandHandler('uninstall', async (_client, event, args) => {
 				let uninstalled = 0
 				for (const arg of args) {
-					const spec = join(__dirname, 'externals', arg + '.js')
+					const spec = join('externals', arg + '.js')
 					try {
 						await fs.rm(spec)
 						manager.uninstall(arg)
