@@ -2,8 +2,8 @@
 	"name": "@xorgram/xor",
 	"version": "0.0.1",
 	"license": "LGPL-3.0",
-	"main": "dist",
-	"bin": "bin",
+	"bin": "bin/index.js",
+	"main": "dist/index.js",
 	"authors": [
 		{
 			"name": "Roj",
