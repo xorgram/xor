@@ -8,6 +8,7 @@
 		"plugin:@typescript-eslint/recommended",
 		"prettier"
 	],
+	"ignorePatterns": ["src/externals/*.js", "dist"],
 	"rules": {
 		"curly": [1, "all"],
 		"@typescript-eslint/no-unused-vars": [
