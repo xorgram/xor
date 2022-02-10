@@ -15,5 +15,6 @@ To get your Xor configured, you need to have the following:
 
 Here are some ways to get a string session for your account:
 
-1. [ssg.roj.im](https://ssg.roj.im)
-2. [`npx tgsession`](https://github.com/Gowtham2003/tgsession)
+1. [repl.it](https://replit.com/@roj1512/TelethonStringSession)
+2. [ssg.roj.im](https://ssg.roj.im)
+3. [`npx tgsession`](https://github.com/Gowtham2003/tgsession)
