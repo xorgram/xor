@@ -7,6 +7,7 @@ import escape from 'html-escape'
 
 import { Module, isModule } from './module'
 import { CommandHandler } from './handlers'
+import { getHelp } from '.'
 
 export function managerModule(manager: ModuleManager): Module {
 	return {
@@ -152,13 +153,14 @@ export function managerModule(manager: ModuleManager): Module {
 					})
 					return
 				}
-				if (!module[0].help) {
+				const message = getHelp(module[0])
+				if (!message) {
 					await event.message.edit({
 						text: event.message.text + '\n' + 'This module has no help.'
 					})
 					return
 				}
-				await event.message.reply({ message: module[0].help })
+				await event.message.reply({ message })
 			})
 		],
 		help: `
