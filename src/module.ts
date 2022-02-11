@@ -15,3 +15,12 @@ export function isModule(value: unknown): value is Module {
 			.length != undefined
 	)
 }
+
+export function getHelp(mod: Module) {
+	if (mod.help !== undefined) {
+		mod.help = mod.help.trim()
+		if (mod.help.length > 0 && mod.help.length <= 4096) {
+			return mod.help
+		}
+	}
+}
