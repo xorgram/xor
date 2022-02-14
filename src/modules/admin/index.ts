@@ -154,7 +154,7 @@ Promotes user to admin. Format : 'promote @username custom-title'. Or if you rep
 
 - demote
 
-Promotes user to admin. Format : 'promote @username custom-title'. Or if you reply to someone's message - 'promote custom-title'. Custom title is optional.
+Demotes participant from admin to user. Format : 'demote @username/userid'. Or if you reply to someone's message - 'demote'
 `
 }
 
