@@ -129,7 +129,8 @@ const admin: Module = {
 							pinMessages: false,
 							postMessages: false,
 							other: false
-						})
+						}),
+						rank: ''
 					})
 				)
 				await event.message.edit({ text: 'Demoted successfully' })
@@ -151,6 +152,9 @@ This module includes commands to make administrating chats easily
 
 Promotes user to admin. Format : 'promote @username custom-title'. Or if you reply to someone's message - 'promote custom-title'. Custom title is optional.
 
+- demote
+
+Promotes user to admin. Format : 'promote @username custom-title'. Or if you reply to someone's message - 'promote custom-title'. Custom title is optional.
 `
 }
 
