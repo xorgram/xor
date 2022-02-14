@@ -1,4 +1,5 @@
 import { Api } from 'telegram'
+import { sleep } from 'telegram/Helpers'
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
 
@@ -56,11 +57,12 @@ const admin: Module = {
 						rank
 					})
 				)
+				await event.message.edit({ text: 'Promoted to ' + rank })
 			} else {
-				await event.message.edit({ text: 'Failed to promote the user' })
+				await event.message.edit({ text: 'I have no admin rights.' })
+				await sleep(2500)
+				await event.message.delete({ revoke: true })
 			}
-
-			await event.message.edit({ text: 'Promoted to ' + rank })
 		})
 	],
 	help: `
