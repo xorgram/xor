@@ -14,6 +14,7 @@ export interface CommandHandlerOpts {
 	aliases?: string[]
 	rawArgs?: boolean
 	rawInput?: boolean
+	allowForward?: boolean
 }
 
 export class CommandHandler extends MessageHandler {
@@ -35,6 +36,13 @@ export class CommandHandler extends MessageHandler {
 		}
 		const { text } = event.message
 		if (!['\\', '>'].includes(text[0])) {
+			return false
+		}
+		if (
+			this.opts.allowForward !== undefined &&
+			this.opts.allowForward == false &&
+			event.message.forward !== undefined
+		) {
 			return false
 		}
 		const command = text.split(/\s/)[0].slice(1)
