@@ -172,7 +172,19 @@ const util: Module = {
 		new CommandHandler('eval', async (client, event, _args, input) => {
 			const message = event.message
 			const reply = await event.message.getReplyMessage()
-			const vm = new NodeVM({ sandbox: { client, event, message, reply, Api } })
+			const vm = new NodeVM({
+				sandbox: {
+					client,
+					c: client,
+					event,
+					e: event,
+					message,
+					m: message,
+					reply,
+					r: reply,
+					Api
+				}
+			})
 			const result = String(
 				await vm.run(`module.exports = (async () => {\n${input}\n})()`)
 			)
