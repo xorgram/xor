@@ -12,6 +12,7 @@ export type MessageHandlerFunc = (
 export class MessageHandler extends Handler {
 	out?: boolean
 	scope?: 'all' | 'group' | 'private' | 'channel'
+	allowForward?: boolean
 
 	constructor(public func: MessageHandlerFunc) {
 		super()
@@ -22,6 +23,9 @@ export class MessageHandler extends Handler {
 			return false
 		}
 		if (!event.message.out) {
+			return false
+		}
+		if (this.allowForward != false && event.message.forward !== undefined) {
 			return false
 		}
 		if (this.scope !== undefined && this.scope !== 'all') {
