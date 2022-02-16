@@ -2,7 +2,7 @@ import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
 
 export const amIAdmin = (chat: Api.TypeEntityLike) => {
-	return chat instanceof Api.Channel && !chat.adminRights
+	return chat instanceof Api.Channel && chat.adminRights
 }
 
 export const isUserAdmin = async (
