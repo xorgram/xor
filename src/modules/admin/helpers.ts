@@ -142,8 +142,6 @@ export const banUser = async (
 			)
 		}
 
-		console.log(chat.id)
-
 		return await client.invoke(
 			new Api.messages.DeleteChatUser({
 				chatId: chat.id,
