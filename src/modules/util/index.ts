@@ -186,9 +186,14 @@ const util: Module = {
 					Api
 				}
 			})
-			const result = String(
-				await vm.run(`module.exports = (async () => {\n${input}\n})()`)
+			let result = JSON.stringify(
+				await vm.run(`module.exports = (async () => {\n${input}\n})()`),
+				null,
+				2
 			)
+			if (result.startsWith('"')) {
+				result = result.replace(/"/g, '')
+			}
 			if (result.length == 0) {
 				await event.message.edit({
 					text: event.message.text + '\n' + 'No output.'
