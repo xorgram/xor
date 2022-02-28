@@ -58,5 +58,3 @@ export async function whois(
 }
 
 export const pre = (string: string) => '<pre>' + escape(string) + '</pre>'
-
-export const printJson = (obj: object): string => JSON.stringify(obj, null, 2)

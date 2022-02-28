@@ -9,7 +9,7 @@ import { Module } from '../../module'
 import { wrap } from '../../helpers'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
-import { pre, whois, printJson } from './helpers'
+import { pre, whois } from './helpers'
 
 const util: Module = {
 	name: 'util',
@@ -182,7 +182,6 @@ const util: Module = {
 					m: message,
 					reply,
 					r: reply,
-					print: printJson,
 					Api
 				}
 			})
