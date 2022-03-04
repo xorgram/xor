@@ -39,6 +39,7 @@ export const getUser = async (
 }
 
 export const ExpectedErrors: { [key: string]: string } = {
+	// Edit Admin Rights
 	ADMINS_TOO_MUCH: 'There are too many admins.',
 	ADMIN_RANK_EMOJI_NOT_ALLOWED: 'An admin rank cannot contain emojis.',
 	ADMIN_RANK_INVALID: 'The specified admin rank is invalid.',
@@ -65,7 +66,13 @@ export const ExpectedErrors: { [key: string]: string } = {
 	USER_NOT_MUTUAL_CONTACT: 'The provided user is not a mutual contact.',
 	USER_PRIVACY_RESTRICTED:
 		"The user's privacy settings do not allow you to do this.",
-	USER_RESTRICTED: "You're spamreported, you can't create channels or chats."
+	USER_RESTRICTED: "You're spamreported, you can't create channels or chats.",
+	// PIN
+	CHAT_NOT_MODIFIED: "The pinned message wasn't modified.",
+	MESSAGE_ID_INVALID: 'MESSAGE_ID_INVALID',
+	PIN_RESTRICTED: "You can't pin messages.",
+	USER_BANNED_IN_CHANNEL:
+		"You're banned from sending messages in supergroups/channels."
 }
 
 export async function wrapRpcErrors(
@@ -75,9 +82,9 @@ export async function wrapRpcErrors(
 	try {
 		await func()
 	} catch (error) {
-		if (error instanceof RPCError) {
+		if (error instanceof RPCError && ExpectedErrors[error['errorMessage']]) {
 			await event.message.edit({
-				text: ExpectedErrors[error['errorMessage']] || 'Something went wrong'
+				text: ExpectedErrors[error['errorMessage']]
 			})
 			return
 		} else {

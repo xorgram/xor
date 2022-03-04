@@ -24,7 +24,7 @@
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts"
 	},
 	"dependencies": {
-		"@xorgram/methods": "^0.0.1-rc.4",
+		"@xorgram/methods": "^0.0.0-test.0",
 		"big-integer": "^1.6.51",
 		"dotenv": "^16.0.0",
 		"envalid": "^7.2.2",
