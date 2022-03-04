@@ -1,8 +1,8 @@
 import { Api } from 'telegram'
+import { Methods } from '@xorgram/methods'
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
 import { getUser, wrapRpcErrors } from './helpers'
-import { Methods } from '@xorgram/methods'
 
 const admin: Module = {
 	name: 'admin',
@@ -10,16 +10,13 @@ const admin: Module = {
 		new CommandHandler('promote', async (client, event, args) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const user = await getUser(event, client, args, true)
 			if (!user) {
-				await event.message.edit({ text: 'User not found' })
+				await event.message.edit({ text: 'User not found.' })
 				return
 			}
-
 			if (chat instanceof Api.Channel) {
 				const xor = new Methods(client)
 				await wrapRpcErrors(event, async () => {
@@ -36,25 +33,28 @@ const admin: Module = {
 						canPromoteMembers: chat.adminRights?.addAdmins,
 						canRestrictMembers: chat.adminRights?.banUsers
 					})
-					await event.message.edit({ text: 'Promoted to admin' })
+					await event.message.edit({
+						text: event.message.text + '\n' + 'User promoted.'
+					})
 				})
 			} else {
-				await event.message.edit({ text: "This command doesn't work here" })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'Cannot promote here.'
+				})
 			}
 		}),
 		new CommandHandler('demote', async (client, event, args) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const user = await getUser(event, client, args)
 			if (!user) {
-				await event.message.edit({ text: 'User not found' })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User not found.'
+				})
 				return
 			}
-
 			if (chat instanceof Api.Channel) {
 				const xor = new Methods(client)
 				await wrapRpcErrors(event, async () => {
@@ -64,44 +64,49 @@ const admin: Module = {
 						rank: user.rank,
 						canManageChat: false
 					})
-					await event.message.edit({ text: 'Promoted to admin' })
+					await event.message.edit({
+						text: event.message.text + '\n' + 'User demoted.'
+					})
 				})
 			} else {
-				await event.message.edit({ text: "This command doesn't work here" })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'Cannot demote here.'
+				})
 			}
 		}),
 		new CommandHandler('ban', async (client, event, args) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const user = await getUser(event, client, args)
 			if (!user) {
-				await event.message.edit({ text: 'User not found' })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User not found.'
+				})
 				return
 			}
-
 			await wrapRpcErrors(event, async () => {
 				const xor = new Methods(client)
 				await xor.banChatMember({
 					chatId: chat.id,
 					userId: await client.getEntity(user.entity)
 				})
-				await event.message.edit({ text: 'Unbanned successully' })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User banned.'
+				})
 			})
 		}),
 		new CommandHandler('unban', async (client, event, args) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const user = await getUser(event, client, args)
 			if (!user) {
-				await event.message.edit({ text: 'User not found' })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User not found.'
+				})
 				return
 			}
 
@@ -111,16 +116,16 @@ const admin: Module = {
 					chatId: chat.id,
 					userId: await client.getEntity(user.entity)
 				})
-				await event.message.edit({ text: 'Unbanned successully' })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User unbanned.'
+				})
 			})
 		}),
 		new CommandHandler('pin', async (client, event, args) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const reply = await event.message.getReplyMessage()
 			if (reply) {
 				const xor = new Methods(client)
@@ -130,21 +135,21 @@ const admin: Module = {
 						messageId: reply.id,
 						disableNotification: args[0] === 'silent'
 					})
-					await event.message.edit({ text: 'Pinned Successfully' })
+					await event.message.edit({
+						text: event.message.text + '\n' + 'Message pinned.'
+					})
 				})
 			} else {
 				await event.message.edit({
-					text: 'Reply command to the message to pin'
+					text: event.message.text + '\n' + 'Reply a the message to pin.'
 				})
 			}
 		}),
 		new CommandHandler('unpin', async (client, event) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
-				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
-
 			const reply = await event.message.getReplyMessage()
 			if (reply) {
 				const xor = new Methods(client)
@@ -155,15 +160,16 @@ const admin: Module = {
 					})
 					if (resp instanceof Api.Updates) {
 						await event.message.edit({
-							text: resp.updates.length
-								? 'Unpinned Successfully'
-								: "This message wasn't pinned"
+							text:
+								event.message.text + '\n' + resp.updates.length
+									? 'Message unpinned.'
+									: 'Message was not pinned.'
 						})
 					}
 				})
 			} else {
 				await event.message.edit({
-					text: 'Reply command to the message to unpin'
+					text: event.message.text + '\n' + 'Reply a pinned message to unpin.'
 				})
 			}
 		})
