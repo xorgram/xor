@@ -177,33 +177,35 @@ const admin: Module = {
 	help: `
 **Introduction**
 
-This module includes commands to make administrating chats easily
+This module aims to make administering chats easy.
 
 **Commands**
 
 - promote
 
-Promotes user to admin. Format : 'promote @username custom-title'. Or if you reply to someone's message - 'promote custom-title'. Custom title is optional.
+Promotes the requested user in a chat. Takes admin title as argument.
 
 - demote
 
-Demotes participant from admin to user. Format : 'demote @username/userid'. Or if you reply to someone's message - 'demote'.
+Demotes the requested user in a chat.
 
 - ban
 
-Bans or removes user from chat. Format : 'ban username/user id' or reply 'ban' to someone's message.
+Bans the requested user from a chat.
 
 - unban
 
-Unban user from supergroup. Format : 'unban username/user id' or reply 'unban' to banned user's message.
+Unbans the requested user from a chat.
+
+*Note: The commands above work by replying to a user or passing their ID or handle as the first argument.*
 
 - pin
 
-Pins a message. Reply 'pin' to the target message. Use 'pin silent' for silent pins.
+Pins the replied message in a chat. Pass "silent" to not notify the members.
 
 - unpin
 
-Unpins a pinned message. Reply 'unpin' to the pinned message.
+Unpins the replied pinned message.
 `
 }
 
