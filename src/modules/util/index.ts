@@ -172,10 +172,27 @@ const util: Module = {
 		new CommandHandler('eval', async (client, event, _args, input) => {
 			const message = event.message
 			const reply = await event.message.getReplyMessage()
-			const vm = new NodeVM({ sandbox: { client, event, message, reply, Api } })
-			const result = String(
-				await vm.run(`module.exports = (async () => {\n${input}\n})()`)
+			const vm = new NodeVM({
+				sandbox: {
+					client,
+					c: client,
+					event,
+					e: event,
+					message,
+					m: message,
+					reply,
+					r: reply,
+					Api
+				}
+			})
+			let result = JSON.stringify(
+				await vm.run(`module.exports = (async () => {\n${input}\n})()`),
+				null,
+				2
 			)
+			if (result.startsWith('"')) {
+				result = result.replace(/"/g, '')
+			}
 			if (result.length == 0) {
 				await event.message.edit({
 					text: event.message.text + '\n' + 'No output.'
