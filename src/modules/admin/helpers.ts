@@ -10,7 +10,6 @@ export const getUser = async (
 ) => {
 	let entity = {} as Api.User
 	let rank = 'Admin'
-
 	const reply = await event.message.getReplyMessage()
 	if (reply) {
 		const sender = await reply.getSender()
@@ -23,7 +22,9 @@ export const getUser = async (
 	} else if (args[0] !== undefined && args[0].length != 0) {
 		const _entity = await client.getEntity(args[0])
 		if (!(_entity instanceof Api.User)) {
-			await event.message.edit({ text: 'Invalid username/user id' })
+			await event.message.edit({
+				text: event.message.text + '\n' + 'Invalid user ID or username.'
+			})
 			return
 		}
 		entity = _entity
@@ -31,7 +32,6 @@ export const getUser = async (
 			rank = args[1]
 		}
 	}
-
 	return {
 		entity,
 		rank: rank
@@ -41,38 +41,36 @@ export const getUser = async (
 export const ExpectedErrors: { [key: string]: string } = {
 	// Edit Admin Rights
 	ADMINS_TOO_MUCH: 'There are too many admins.',
-	ADMIN_RANK_EMOJI_NOT_ALLOWED: 'An admin rank cannot contain emojis.',
-	ADMIN_RANK_INVALID: 'The specified admin rank is invalid.',
-	BOTS_TOO_MUCH: 'There are too many bots in this chat/channel.',
-	BOT_CHANNELS_NA: "Bots can't edit admin privileges.",
-	BOT_GROUPS_BLOCKED: "This bot can't be added to groups.",
+	ADMIN_RANK_EMOJI_NOT_ALLOWED: 'The admin title cannot contain emojis.',
+	ADMIN_RANK_INVALID: 'The specified admin title is invalid.',
+	BOTS_TOO_MUCH: 'There are too many bots.',
+	BOT_CHANNELS_NA: 'Bots cannot edit admin privileges.',
+	BOT_GROUPS_BLOCKED: 'This bot cannot be added to groups.',
 	CHANNEL_INVALID: 'The provided channel is invalid.',
-	CHANNEL_PRIVATE: "You haven't joined this channel/supergroup.",
+	CHANNEL_PRIVATE: 'You have not joined this chat.',
 	CHAT_ADMIN_INVITE_REQUIRED: 'You do not have the rights to do this.',
-	CHAT_ADMIN_REQUIRED: 'You must be an admin in this chat to do this.',
-	CHAT_WRITE_FORBIDDEN: "You can't write in this chat.",
-	FRESH_CHANGE_ADMINS_FORBIDDEN:
-		"You were just elected admin, you can't add or modify other admins yet.",
+	CHAT_ADMIN_REQUIRED: 'You must be an admin to do this.',
+	CHAT_WRITE_FORBIDDEN: 'You cannot write in this chat.',
+	FRESH_CHANGE_ADMINS_FORBIDDEN: 'You cannot add or modify other admins yet.',
 	INPUT_USER_DEACTIVATED: 'The specified user was deleted.',
-	PEER_ID_INVALID: 'The provided peer id is invalid.',
-	RIGHT_FORBIDDEN: 'Your admin rights do not allow you to do this.',
-	USERS_TOO_MUCH:
-		'The maximum number of users has been exceeded (to create a chat, for example).',
+	PEER_ID_INVALID: 'The provided ID is invalid.',
+	RIGHT_FORBIDDEN: 'Your rights do not allow you to do this.',
+	USERS_TOO_MUCH: 'The maximum number of users has been exceeded.',
 	USER_BLOCKED: 'User blocked.',
 	USER_CHANNELS_TOO_MUCH:
-		'One of the users you tried to add is already in too many channels/supergroups.',
-	USER_CREATOR: "You can't leave this channel, because you're its creator.",
+		'One of the users you tried to add is in too many chats.',
+	USER_CREATOR: 'You cannot leave this channel, because you are its creator.',
 	USER_ID_INVALID: 'The provided user ID is invalid.',
 	USER_NOT_MUTUAL_CONTACT: 'The provided user is not a mutual contact.',
 	USER_PRIVACY_RESTRICTED:
-		"The user's privacy settings do not allow you to do this.",
-	USER_RESTRICTED: "You're spamreported, you can't create channels or chats.",
+		'The user’s privacy settings do not allow you to do this.',
+	USER_RESTRICTED: 'You’re restricted, you cannot create channels or chats.',
 	// PIN
-	CHAT_NOT_MODIFIED: "The pinned message wasn't modified.",
-	MESSAGE_ID_INVALID: 'MESSAGE_ID_INVALID',
-	PIN_RESTRICTED: "You can't pin messages.",
+	CHAT_NOT_MODIFIED: 'The pinned message was not modified.',
+	MESSAGE_ID_INVALID: 'Message ID invalid.',
+	PIN_RESTRICTED: 'You canot pin messages.',
 	USER_BANNED_IN_CHANNEL:
-		"You're banned from sending messages in supergroups/channels."
+		'You are banned from sending messages in supergroups/channels.'
 }
 
 export async function wrapRpcErrors(
@@ -84,7 +82,7 @@ export async function wrapRpcErrors(
 	} catch (error) {
 		if (error instanceof RPCError && ExpectedErrors[error['errorMessage']]) {
 			await event.message.edit({
-				text: ExpectedErrors[error['errorMessage']]
+				text: event.message.text + '\n' + ExpectedErrors[error['errorMessage']]
 			})
 			return
 		} else {
