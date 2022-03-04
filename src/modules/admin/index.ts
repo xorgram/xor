@@ -1,15 +1,8 @@
 import { Api } from 'telegram'
-import { sleep } from 'telegram/Helpers'
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
-import {
-	amIAdmin,
-	isUserAdmin,
-	promote,
-	demote,
-	banUser,
-	getUser
-} from './helpers'
+import { getUser, wrapRpcErrors } from './helpers'
+import { Methods } from '@xorgram/methods'
 
 const admin: Module = {
 	name: 'admin',
@@ -21,31 +14,32 @@ const admin: Module = {
 				return
 			}
 
-			if (!amIAdmin(chat)) {
-				await event.message.edit({ text: 'I am not an admin here' })
-				return
-			}
-
 			const user = await getUser(event, client, args, true)
 			if (!user) {
 				await event.message.edit({ text: 'User not found' })
 				return
 			}
 
-			if (await isUserAdmin(user.entity, chat, client)) {
-				await event.message.edit({
-					text: "User is already an admin, Can't promote him/her"
+			if (chat instanceof Api.Channel) {
+				const xor = new Methods(client)
+				await wrapRpcErrors(event, async () => {
+					await xor.promoteChatMember({
+						chatId: chat.id,
+						userId: user.entity,
+						rank: user.rank,
+						canChangeInfo: chat.adminRights?.changeInfo,
+						canDeleteMessages: chat.adminRights?.deleteMessages,
+						canEditMessages: chat.adminRights?.editMessages,
+						canInviteUsers: chat.adminRights?.inviteUsers,
+						canManageCalls: chat.adminRights?.manageCall,
+						canPinMessages: chat.adminRights?.pinMessages,
+						canPromoteMembers: chat.adminRights?.addAdmins,
+						canRestrictMembers: chat.adminRights?.banUsers
+					})
+					await event.message.edit({ text: 'Promoted to admin' })
 				})
-				return
-			}
-
-			if (chat instanceof Api.Channel && chat.adminRights) {
-				await promote(user.entity, user.rank, chat, client)
-				await event.message.edit({ text: 'Promoted to admin' })
 			} else {
-				await event.message.edit({ text: 'I have no admin rights.' })
-				await sleep(2500)
-				await event.message.delete({ revoke: true })
+				await event.message.edit({ text: "This command doesn't work here" })
 			}
 		}),
 		new CommandHandler('demote', async (client, event, args) => {
@@ -55,29 +49,25 @@ const admin: Module = {
 				return
 			}
 
-			if (!amIAdmin(chat)) {
-				await event.message.edit({ text: 'I am not an admin here' })
-				return
-			}
-
 			const user = await getUser(event, client, args)
 			if (!user) {
 				await event.message.edit({ text: 'User not found' })
 				return
 			}
 
-			if (!(await isUserAdmin(user.entity, chat, client))) {
-				await event.message.edit({ text: "User isn't an admin" })
-				return
-			}
-
-			if (chat instanceof Api.Channel && chat.adminRights) {
-				await demote(user.entity, chat, client)
-				await event.message.edit({ text: 'Demoted successfully' })
+			if (chat instanceof Api.Channel) {
+				const xor = new Methods(client)
+				await wrapRpcErrors(event, async () => {
+					await xor.promoteChatMember({
+						chatId: chat.id,
+						userId: user.entity,
+						rank: user.rank,
+						canManageChat: false
+					})
+					await event.message.edit({ text: 'Promoted to admin' })
+				})
 			} else {
-				await event.message.edit({ text: "Can't demote this user" })
-				await sleep(3000)
-				await event.message.delete({ revoke: true })
+				await event.message.edit({ text: "This command doesn't work here" })
 			}
 		}),
 		new CommandHandler('ban', async (client, event, args) => {
@@ -87,8 +77,25 @@ const admin: Module = {
 				return
 			}
 
-			if (chat instanceof Api.Channel && !chat.adminRights) {
-				await event.message.edit({ text: 'I am not an admin here' })
+			const user = await getUser(event, client, args)
+			if (!user) {
+				await event.message.edit({ text: 'User not found' })
+				return
+			}
+
+			await wrapRpcErrors(event, async () => {
+				const xor = new Methods(client)
+				await xor.banChatMember({
+					chatId: chat.id,
+					userId: await client.getEntity(user.entity)
+				})
+				await event.message.edit({ text: 'Unbanned successully' })
+			})
+		}),
+		new CommandHandler('unban', async (client, event, args) => {
+			const chat = await event.message.getChat()
+			if (!chat) {
+				await event.message.edit({ text: "Couldn't fetch chat info" })
 				return
 			}
 
@@ -98,13 +105,14 @@ const admin: Module = {
 				return
 			}
 
-			if (await isUserAdmin(user.entity, chat, client)) {
-				await event.message.edit({ text: 'User is an admin' })
-				return
-			}
-
-			await banUser(user.entity, chat, client)
-			await event.message.edit({ text: 'Banned successully' })
+			await wrapRpcErrors(event, async () => {
+				const xor = new Methods(client)
+				await xor.unbanChatMember({
+					chatId: chat.id,
+					userId: await client.getEntity(user.entity)
+				})
+				await event.message.edit({ text: 'Unbanned successully' })
+			})
 		})
 	],
 	help: `
@@ -125,6 +133,10 @@ Demotes participant from admin to user. Format : 'demote @username/userid'. Or i
 - ban
 
 Bans or removes user from chat. Format : 'ban username/user id' or reply 'ban' to someone's message
+
+- unban
+
+Unban user from supergroup. Format : 'unban username/user id' or reply 'unban' to banned user's message
 `
 }
 

@@ -1,29 +1,6 @@
 import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
-
-export const amIAdmin = (chat: Api.TypeEntityLike) => {
-	return chat instanceof Api.Channel && chat.adminRights
-}
-
-export const isUserAdmin = async (
-	user: Api.User,
-	chat: Api.TypeEntityLike,
-	client: TelegramClient
-) => {
-	const participant = (
-		await client.invoke(
-			new Api.channels.GetParticipant({
-				channel: chat,
-				participant: user
-			})
-		)
-	).participant
-
-	return (
-		participant instanceof Api.ChannelParticipantAdmin ||
-		participant instanceof Api.ChannelParticipantCreator
-	)
-}
+import { RPCError } from 'telegram/errors'
 
 export const getUser = async (
 	event: NewMessageEvent,
@@ -31,7 +8,7 @@ export const getUser = async (
 	args: string[],
 	getRank = false
 ) => {
-	let entity: Api.User = {} as Api.User
+	let entity = {} as Api.User
 	let rank = 'Admin'
 
 	const reply = await event.message.getReplyMessage()
@@ -61,92 +38,50 @@ export const getUser = async (
 	}
 }
 
-export const promote = async (
-	user: Api.User,
-	rank: string,
-	chat: Api.Channel,
-	client: TelegramClient
-) => {
-	await client.invoke(
-		new Api.channels.EditAdmin({
-			channel: chat.id,
-			userId: user,
-			adminRights: new Api.ChatAdminRights({
-				addAdmins: chat.adminRights?.addAdmins ?? false,
-				anonymous: chat.adminRights?.anonymous ?? false,
-				banUsers: chat.adminRights?.banUsers ?? false,
-				changeInfo: chat.adminRights?.changeInfo ?? false,
-				deleteMessages: chat.adminRights?.deleteMessages ?? false,
-				editMessages: chat.adminRights?.deleteMessages ?? false,
-				inviteUsers: chat.adminRights?.inviteUsers ?? false,
-				manageCall: chat.adminRights?.manageCall ?? false,
-				pinMessages: chat.adminRights?.pinMessages ?? false,
-				postMessages: chat.adminRights?.postMessages ?? false,
-				other: chat.adminRights?.other ?? false
-			}),
-			rank
-		})
-	)
+export const ExpectedErrors: { [key: string]: string } = {
+	ADMINS_TOO_MUCH: 'There are too many admins.',
+	ADMIN_RANK_EMOJI_NOT_ALLOWED: 'An admin rank cannot contain emojis.',
+	ADMIN_RANK_INVALID: 'The specified admin rank is invalid.',
+	BOTS_TOO_MUCH: 'There are too many bots in this chat/channel.',
+	BOT_CHANNELS_NA: "Bots can't edit admin privileges.",
+	BOT_GROUPS_BLOCKED: "This bot can't be added to groups.",
+	CHANNEL_INVALID: 'The provided channel is invalid.',
+	CHANNEL_PRIVATE: "You haven't joined this channel/supergroup.",
+	CHAT_ADMIN_INVITE_REQUIRED: 'You do not have the rights to do this.',
+	CHAT_ADMIN_REQUIRED: 'You must be an admin in this chat to do this.',
+	CHAT_WRITE_FORBIDDEN: "You can't write in this chat.",
+	FRESH_CHANGE_ADMINS_FORBIDDEN:
+		"You were just elected admin, you can't add or modify other admins yet.",
+	INPUT_USER_DEACTIVATED: 'The specified user was deleted.',
+	PEER_ID_INVALID: 'The provided peer id is invalid.',
+	RIGHT_FORBIDDEN: 'Your admin rights do not allow you to do this.',
+	USERS_TOO_MUCH:
+		'The maximum number of users has been exceeded (to create a chat, for example).',
+	USER_BLOCKED: 'User blocked.',
+	USER_CHANNELS_TOO_MUCH:
+		'One of the users you tried to add is already in too many channels/supergroups.',
+	USER_CREATOR: "You can't leave this channel, because you're its creator.",
+	USER_ID_INVALID: 'The provided user ID is invalid.',
+	USER_NOT_MUTUAL_CONTACT: 'The provided user is not a mutual contact.',
+	USER_PRIVACY_RESTRICTED:
+		"The user's privacy settings do not allow you to do this.",
+	USER_RESTRICTED: "You're spamreported, you can't create channels or chats."
 }
 
-export const demote = async (
-	user: Api.User,
-	chat: Api.Channel,
-	client: TelegramClient
-) => {
-	await client.invoke(
-		new Api.channels.EditAdmin({
-			channel: chat.id,
-			userId: user,
-			adminRights: new Api.ChatAdminRights({
-				addAdmins: false,
-				anonymous: false,
-				banUsers: false,
-				changeInfo: false,
-				deleteMessages: false,
-				editMessages: false,
-				inviteUsers: false,
-				manageCall: false,
-				pinMessages: false,
-				postMessages: false,
-				other: false
-			}),
-			rank: ''
-		})
-	)
-}
-
-export const banUser = async (
-	user: Api.User,
-	chat: Api.TypeEntityLike,
-	client: TelegramClient
-) => {
-	if (chat instanceof Api.Channel) {
-		if (chat.gigagroup || chat.megagroup) {
-			return await client.invoke(
-				new Api.channels.EditBanned({
-					channel: chat,
-					participant: user,
-					bannedRights: new Api.ChatBannedRights({
-						untilDate: 0,
-						viewMessages: true,
-						sendMessages: true,
-						sendMedia: true,
-						sendStickers: true,
-						sendGifs: true,
-						sendGames: true,
-						sendInline: true,
-						embedLinks: true
-					})
-				})
-			)
-		}
-
-		return await client.invoke(
-			new Api.messages.DeleteChatUser({
-				chatId: chat.id,
-				userId: user.id
+export async function wrapRpcErrors(
+	event: NewMessageEvent,
+	func: () => Promise<void> | void
+) {
+	try {
+		await func()
+	} catch (error) {
+		if (error instanceof RPCError) {
+			await event.message.edit({
+				text: ExpectedErrors[error['errorMessage']] || 'Something went wrong'
 			})
-		)
+			return
+		} else {
+			throw error
+		}
 	}
 }
