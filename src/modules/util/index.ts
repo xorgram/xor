@@ -4,6 +4,7 @@ import { NodeVM } from 'vm2'
 import { zero } from 'big-integer'
 import { Api, version as telegramVersion } from 'telegram'
 import { CustomFile } from 'telegram/client/uploads'
+import { Methods } from '@xorgram/methods'
 
 import { Module } from '../../module'
 import { wrap } from '../../helpers'
@@ -182,7 +183,8 @@ const util: Module = {
 					m: message,
 					reply,
 					r: reply,
-					Api
+					Api,
+					methods: new Methods(client)
 				}
 			})
 			let result = JSON.stringify(
@@ -246,7 +248,7 @@ Fetches and displays basic information about the current chat, the provided iden
 
 - eval
 
-Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client\`, the \`NewMessageEvent\` as \`event\`, the message as \`event\`, the replied message as \`reply\` and the GramJS API namespace as \`Api\`.
+Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client | c\`, the \`NewMessageEvent\` as \`event | e\`, the message as \`message | m\`, the replied message as \`reply | r\`, xorgram-methods instance as \`methods\` and the GramJS API namespace as \`Api\`.
 
 `
 }
