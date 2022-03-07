@@ -29,7 +29,7 @@
 		"dotenv": "^16.0.0",
 		"envalid": "^7.3.0",
 		"html-escape": "^2.0.0",
-		"telegram": "^2.5.2",
+		"telegram": "^2.5.3",
 		"vm2": "^3.9.9"
 	},
 	"devDependencies": {
