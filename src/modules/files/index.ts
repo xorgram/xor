@@ -1,8 +1,12 @@
 import { Api } from 'telegram'
+import { CustomFile } from 'telegram/client/uploads'
 import fs from 'fs/promises'
+import { constants } from 'fs'
 import { join } from 'path'
+
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
+import { updateMessage } from '../../helpers'
 import { parseAttributes, getRandomString } from './helpers'
 
 const files: Module = {
@@ -13,13 +17,15 @@ const files: Module = {
 			async (client, event) => {
 				const reply = await event.message.getReplyMessage()
 				if (!reply) {
+					await updateMessage(
+						event,
+						'Reply this command to the file to download'
+					)
 					return
 				}
 				const { media } = reply
 				if (!media) {
-					await event.message.edit({
-						text: event.message.text + '\nNo media found on the replied message'
-					})
+					await updateMessage(event, 'No media found on the replied message')
 					return
 				}
 				let filename = ''
@@ -38,29 +44,124 @@ const files: Module = {
 					} else {
 						const mime = media.document.mimeType
 						if (mime.includes('video')) {
-							filename = 'video_' + getRandomString() + mime.split('/')[1]
+							filename = 'video_' + getRandomString() + '.' + mime.split('/')[1]
 						}
 						if (mime.includes('audio')) {
-							filename = 'audio' + getRandomString() + mime.split('/')[1]
+							filename = 'audio' + getRandomString() + '.' + mime.split('/')[1]
 						}
 					}
 				}
+				await updateMessage(event, 'Downloading...')
 				const mediaBuffer = await client.downloadMedia(media, {})
 				const spec = join('downloads', filename)
 				await fs.mkdir(join('downloads'), { recursive: true })
 				await fs.writeFile(spec, mediaBuffer)
-				await event.message.edit({
-					text:
-						event.message.text +
-						'\nDownloaded to <code>/downloads/' +
-						filename +
-						'</code>',
-					parseMode: 'html'
-				})
+				await updateMessage(
+					event,
+					'Downloaded to <code>/downloads/' + filename + '</code>',
+					'html'
+				)
 			},
 			{ aliases: ['dl'] }
+		),
+		new CommandHandler(
+			'upload',
+			async (client, event, args) => {
+				if (!args || !args.length) {
+					await event.message.edit({
+						text: event.message.text + '\nProvide a file path to upload'
+					})
+					return
+				}
+				const filePath = join(process.cwd(), args[0])
+				const forceDocument = args[1] ? args[1] === 'true' : true
+				try {
+					await fs.access(filePath, constants.R_OK)
+				} catch (e) {
+					await updateMessage(
+						event,
+						`File not found/access denied\n\n<code>${e}</code>`,
+						'html'
+					)
+					return
+				}
+				if (!event.chatId) {
+					return
+				}
+				await updateMessage(event, 'Uploading')
+				await client.sendFile(event.chatId, {
+					file: filePath,
+					forceDocument
+				})
+				await updateMessage(event, 'Upload Successful')
+			},
+			{ aliases: ['ul'] }
+		),
+		new CommandHandler('rnupload', async (client, event, args) => {
+			if (!args || !args.length) {
+				await updateMessage(event, 'Provide the rename text')
+				return
+			}
+			const reply = await event.message.getReplyMessage()
+			if (!reply) {
+				await updateMessage(event, 'Reply this command to the file to download')
+				return
+			}
+			const { media } = reply
+			if (!media) {
+				await updateMessage(event, 'No media found on the replied message')
+				return
+			}
+			if (!event.chatId) {
+				return
+			}
+			await updateMessage(event, 'Downloading...')
+			const mediaBuffer = await client.downloadMedia(media, {})
+			await updateMessage(event, 'Uploading...')
+			await client.sendFile(event.chatId, {
+				file: new CustomFile(args[0], mediaBuffer.length, '', mediaBuffer),
+				forceDocument: true
+			})
+			await updateMessage(event, 'Renamed file to ' + args[0])
+		}),
+		new CommandHandler(
+			'listdl',
+			async (_client, event) => {
+				const files = await fs.readdir(join(process.cwd(), 'downloads'))
+				await updateMessage(
+					event,
+					files.map(file => `\n- <code>${file}</code>`).join(''),
+					'html'
+				)
+			},
+			{
+				aliases: ['lsdl']
+			}
 		)
-	]
+	],
+	help: `
+**Introduction**
+
+The files module can be used for operations like file download, upload, listing and more.
+
+**Commands**
+
+- download
+
+Downloads the replied file/photo/video to server.
+
+- upload <file-path>
+
+Uploads any file from server to Telegram.
+
+- rnupload <new-name>
+
+Reuploads the replied file to Telegram with provided name.
+
+- listdl
+
+Lists the downloaded files.
+`
 }
 
 export default files
