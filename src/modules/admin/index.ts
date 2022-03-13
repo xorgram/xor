@@ -161,9 +161,11 @@ const admin: Module = {
 					if (resp instanceof Api.Updates) {
 						await event.message.edit({
 							text:
-								event.message.text + '\n' + resp.updates.length
+								event.message.text +
+								'\n' +
+								(resp.updates.length
 									? 'Message unpinned.'
-									: 'Message was not pinned.'
+									: 'Message was not pinned.')
 						})
 					}
 				})
