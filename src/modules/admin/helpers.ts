@@ -31,6 +31,8 @@ export const getUser = async (
 		if (getRank && args[1]) {
 			rank = args[1]
 		}
+	} else {
+		return
 	}
 	return {
 		entity,
