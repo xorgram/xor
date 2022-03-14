@@ -89,28 +89,32 @@ const files: Module = {
 			},
 			{ aliases: ['ul'] }
 		),
-		new CommandHandler('rnupload', async (client, event, args) => {
-			if (!args || !args.length) {
-				await updateMessage(event, 'Provide a new name.')
-				return
-			}
-			const media = (await event.message.getReplyMessage())?.media
-			if (!media) {
-				await updateMessage(event, 'Reply a file to download.')
-				return
-			}
-			if (!event.chatId) {
-				return
-			}
-			await updateMessage(event, 'Downloading...')
-			const mediaBuffer = await client.downloadMedia(media, {})
-			await updateMessage(event, 'Uploading...')
-			await client.sendFile(event.chatId, {
-				file: new CustomFile(args[0], mediaBuffer.length, '', mediaBuffer),
-				forceDocument: true
-			})
-			await updateMessage(event, `Renamed to ${args[0]}.`)
-		}),
+		new CommandHandler(
+			'rnupload',
+			async (client, event, args) => {
+				if (!args || !args.length) {
+					await updateMessage(event, 'Provide a new name.')
+					return
+				}
+				const media = (await event.message.getReplyMessage())?.media
+				if (!media) {
+					await updateMessage(event, 'Reply a file to download.')
+					return
+				}
+				if (!event.chatId) {
+					return
+				}
+				await updateMessage(event, 'Downloading...')
+				const mediaBuffer = await client.downloadMedia(media, {})
+				await updateMessage(event, 'Uploading...')
+				await client.sendFile(event.chatId, {
+					file: new CustomFile(args[0], mediaBuffer.length, '', mediaBuffer),
+					forceDocument: true
+				})
+				await updateMessage(event, `Renamed to ${args[0]}.`)
+			},
+			{ aliases: ['rnul'] }
+		),
 		new CommandHandler(
 			'listdl',
 			async (_client, event) => {
@@ -141,11 +145,11 @@ Downloads the replied file or media.
 
 Uploads a local file to Telegram.
 
-- rnupload
+- rnupload, rnul
 
 Re-uploads the replied file to Telegram with a new name.
 
-- listdl
+- listdl, lsdl
 
 Lists the downloaded files.
 `
