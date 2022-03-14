@@ -1,16 +1,15 @@
 import { Api } from 'telegram'
-import { randomBytes } from 'crypto'
 
-type Null<T> = T | null
+type Nullable<T> = T | null
 
 export const parseAttributes = (attrs: Api.TypeDocumentAttribute[]) => {
-	let attrAnimated: Null<Api.DocumentAttributeAnimated> = null
-	let attrAudio: Null<Api.DocumentAttributeAudio> = null
-	let attrFilename: Null<Api.DocumentAttributeFilename> = null
-	let attrHasStickers: Null<Api.DocumentAttributeHasStickers> = null
-	let attrImageSize: Null<Api.DocumentAttributeImageSize> = null
-	let attrSticker: Null<Api.DocumentAttributeSticker> = null
-	let attrVideo: Null<Api.DocumentAttributeVideo> = null
+	let attrAnimated: Nullable<Api.DocumentAttributeAnimated> = null
+	let attrAudio: Nullable<Api.DocumentAttributeAudio> = null
+	let attrFilename: Nullable<Api.DocumentAttributeFilename> = null
+	let attrHasStickers: Nullable<Api.DocumentAttributeHasStickers> = null
+	let attrImageSize: Nullable<Api.DocumentAttributeImageSize> = null
+	let attrSticker: Nullable<Api.DocumentAttributeSticker> = null
+	let attrVideo: Nullable<Api.DocumentAttributeVideo> = null
 	for (const attr of attrs) {
 		if (attr instanceof Api.DocumentAttributeAnimated) {
 			attrAnimated = attr
@@ -51,5 +50,3 @@ export const parseAttributes = (attrs: Api.TypeDocumentAttribute[]) => {
 		attrVideo
 	}
 }
-
-export const getRandomString = (bytes = 4) => randomBytes(bytes).toString('hex')

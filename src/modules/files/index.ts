@@ -7,7 +7,7 @@ import { join } from 'path'
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
 import { updateMessage } from '../../helpers'
-import { parseAttributes, getRandomString } from './helpers'
+import { parseAttributes } from './helpers'
 
 const files: Module = {
 	name: 'files',
@@ -15,22 +15,14 @@ const files: Module = {
 		new CommandHandler(
 			'download',
 			async (client, event) => {
-				const reply = await event.message.getReplyMessage()
-				if (!reply) {
-					await updateMessage(
-						event,
-						'Reply this command to the file to download'
-					)
-					return
-				}
-				const { media } = reply
+				const media = (await event.message.getReplyMessage())?.media
 				if (!media) {
-					await updateMessage(event, 'No media found on the replied message')
+					await updateMessage(event, 'Reply a file to download.')
 					return
 				}
 				let filename = ''
 				if (media instanceof Api.MessageMediaPhoto) {
-					filename = 'photo_' + getRandomString() + '.png'
+					filename = 'photo_' + media.photo?.id.toString() + '.png'
 				}
 				if (
 					media instanceof Api.MessageMediaDocument &&
@@ -44,10 +36,10 @@ const files: Module = {
 					} else {
 						const mime = media.document.mimeType
 						if (mime.includes('video')) {
-							filename = 'video_' + getRandomString() + '.' + mime.split('/')[1]
+							filename = 'video_' + media.document.id + '.' + mime.split('/')[1]
 						}
 						if (mime.includes('audio')) {
-							filename = 'audio' + getRandomString() + '.' + mime.split('/')[1]
+							filename = 'audio' + media.document.id + '.' + mime.split('/')[1]
 						}
 					}
 				}
@@ -58,7 +50,7 @@ const files: Module = {
 				await fs.writeFile(spec, mediaBuffer)
 				await updateMessage(
 					event,
-					'Downloaded to <code>/downloads/' + filename + '</code>',
+					'Downloaded to <code>./downloads/' + filename + '</code>',
 					'html'
 				)
 			},
@@ -69,7 +61,7 @@ const files: Module = {
 			async (client, event, args) => {
 				if (!args || !args.length) {
 					await event.message.edit({
-						text: event.message.text + '\nProvide a file path to upload'
+						text: event.message.text + '\nProvide a file path to upload.'
 					})
 					return
 				}
@@ -80,7 +72,7 @@ const files: Module = {
 				} catch (e) {
 					await updateMessage(
 						event,
-						`File not found/access denied\n\n<code>${e}</code>`,
+						`File not found or access denied (<code>${e}</code>).`,
 						'html'
 					)
 					return
@@ -88,28 +80,23 @@ const files: Module = {
 				if (!event.chatId) {
 					return
 				}
-				await updateMessage(event, 'Uploading')
+				await updateMessage(event, 'Uploading...')
 				await client.sendFile(event.chatId, {
 					file: filePath,
 					forceDocument
 				})
-				await updateMessage(event, 'Upload Successful')
+				await updateMessage(event, 'Uploaded.')
 			},
 			{ aliases: ['ul'] }
 		),
 		new CommandHandler('rnupload', async (client, event, args) => {
 			if (!args || !args.length) {
-				await updateMessage(event, 'Provide the rename text')
+				await updateMessage(event, 'Provide a new name.')
 				return
 			}
-			const reply = await event.message.getReplyMessage()
-			if (!reply) {
-				await updateMessage(event, 'Reply this command to the file to download')
-				return
-			}
-			const { media } = reply
+			const media = (await event.message.getReplyMessage())?.media
 			if (!media) {
-				await updateMessage(event, 'No media found on the replied message')
+				await updateMessage(event, 'Reply a file to download.')
 				return
 			}
 			if (!event.chatId) {
@@ -122,7 +109,7 @@ const files: Module = {
 				file: new CustomFile(args[0], mediaBuffer.length, '', mediaBuffer),
 				forceDocument: true
 			})
-			await updateMessage(event, 'Renamed file to ' + args[0])
+			await updateMessage(event, `Renamed to ${args[0]}.`)
 		}),
 		new CommandHandler(
 			'listdl',
