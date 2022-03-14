@@ -14,3 +14,14 @@ export async function wrap(event: NewMessageEvent, func: () => Promise<void>) {
 		}
 	}
 }
+
+export async function updateMessage(
+	event: NewMessageEvent,
+	text: string,
+	pm?: 'md' | 'markdown' | 'html'
+) {
+	return await event.message.edit({
+		text: event.message.text + '\n' + text,
+		parseMode: pm
+	})
+}
