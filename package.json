@@ -1,6 +1,6 @@
 {
 	"name": "@xorgram/xor",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"license": "LGPL-3.0",
 	"bin": "bin/index.js",
 	"main": "dist/index.js",
@@ -24,7 +24,7 @@
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts"
 	},
 	"dependencies": {
-		"@xorgram/methods": "^0.0.0-test.0",
+		"@xorgram/methods": "^0.0.1-beta.1",
 		"big-integer": "^1.6.51",
 		"dotenv": "^16.0.0",
 		"envalid": "^7.3.0",
@@ -39,7 +39,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.14.0",
 		"@typescript-eslint/parser": "^5.14.0",
 		"commitlint": "^16.2.1",
-		"eslint": "^8.10.0",
+		"eslint": "^8.11.0",
 		"eslint-config-prettier": "^8.5.0",
 		"husky": "^7.0.4",
 		"lint-staged": "^12.3.5",

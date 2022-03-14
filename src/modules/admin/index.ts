@@ -109,7 +109,6 @@ const admin: Module = {
 				})
 				return
 			}
-
 			await wrapRpcErrors(event, async () => {
 				const xor = new Methods(client)
 				await xor.unbanChatMember({
@@ -161,9 +160,11 @@ const admin: Module = {
 					if (resp instanceof Api.Updates) {
 						await event.message.edit({
 							text:
-								event.message.text + '\n' + resp.updates.length
+								event.message.text +
+								'\n' +
+								(resp.updates.length
 									? 'Message unpinned.'
-									: 'Message was not pinned.'
+									: 'Message was not pinned.')
 						})
 					}
 				})
@@ -172,6 +173,26 @@ const admin: Module = {
 					text: event.message.text + '\n' + 'Reply a pinned message to unpin.'
 				})
 			}
+		}),
+		new CommandHandler('add', async (client, event, args) => {
+			const chat = await event.message.getChat()
+			if (!chat) {
+				return
+			}
+			const user = await getUser(event, client, args)
+			if (!user) {
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User not found.'
+				})
+				return
+			}
+			await wrapRpcErrors(event, async () => {
+				const xor = new Methods(client)
+				await xor.addChatMembers({ chatId: chat, userId: user.entity })
+				await event.message.edit({
+					text: event.message.text + '\n' + 'User added.'
+				})
+			})
 		})
 	],
 	help: `
@@ -183,25 +204,29 @@ This module aims to make administering chats easy.
 
 - promote
 
-Promotes the requested user in a chat. Takes admin title as argument.
+Promotes the requested user in the chat. Takes admin title as argument.
 
 - demote
 
-Demotes the requested user in a chat.
+Demotes the requested user in the chat.
 
 - ban
 
-Bans the requested user from a chat.
+Bans the requested user from the chat.
 
 - unban
 
-Unbans the requested user from a chat.
+Unbans the requested user from the chat.
+
+- add
+
+Adds the requested user to the chat.
 
 *Note: The commands above work by replying to a user or passing their ID or handle as the first argument.*
 
 - pin
 
-Pins the replied message in a chat. Pass "silent" to not notify the members.
+Pins the replied message in the chat. Pass "silent" to not notify the members.
 
 - unpin
 

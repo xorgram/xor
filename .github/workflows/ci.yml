@@ -7,35 +7,29 @@ on:
     paths-ignore:
       - '**.md'
     tags:
-      - v*
+      - '*'
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '#skip-lint')"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Install
-        run: npm ci
+      - run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - run: npm run lint
 
   build:
     runs-on: ubuntu-latest
     needs: lint
     if: "!contains(github.event.head_commit.message, '#skip-build')"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Install
-        run: npm ci
+      - run: npm ci
 
-      - name: Build
-        run: npm run build
+      - run: npm run build
 
   release:
     runs-on: ubuntu-latest
@@ -46,3 +40,20 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '17.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

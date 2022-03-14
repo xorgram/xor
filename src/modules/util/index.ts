@@ -192,14 +192,16 @@ const util: Module = {
 				null,
 				2
 			)
+			if (!result) {
+				await event.message.reply({
+					message: 'No output.'
+				})
+				return
+			}
 			if (result.startsWith('"')) {
 				result = result.replace(/"/g, '')
 			}
-			if (result.length == 0) {
-				await event.message.edit({
-					text: event.message.text + '\n' + 'No output.'
-				})
-			} else if (result.length <= 4096) {
+			if (result.length <= 4096) {
 				await event.message.reply({
 					message: result,
 					parseMode: undefined,
