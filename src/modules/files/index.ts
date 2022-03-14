@@ -50,7 +50,7 @@ const files: Module = {
 				await fs.writeFile(spec, mediaBuffer)
 				await updateMessage(
 					event,
-					'Downloaded to <code>./downloads/' + filename + '</code>',
+					'Downloaded to <code>./downloads/' + filename + '</code>.',
 					'html'
 				)
 			},
@@ -133,17 +133,17 @@ The files module can be used for operations like file download, upload, listing 
 
 **Commands**
 
-- download
+- download, dl
 
-Downloads the replied file/photo/video to server.
+Downloads the replied file or media.
 
-- upload <file-path>
+- upload, ul
 
-Uploads any file from server to Telegram.
+Uploads a local file to Telegram.
 
-- rnupload <new-name>
+- rnupload
 
-Reuploads the replied file to Telegram with provided name.
+Re-uploads the replied file to Telegram with a new name.
 
 - listdl
 
