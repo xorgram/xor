@@ -28,6 +28,12 @@ export function managerModule(manager: ModuleManager): Module {
 					return
 				}
 				const result = await client.downloadMedia(media, {})
+				if (!result) {
+					await event.message.edit({
+						text: event.message.text + '\n' + "Coudn't download the module."
+					})
+					return
+				}
 				const spec = join('externals', '.' + media.document.id + '.js')
 				await fs.writeFile(spec, result)
 				let module
