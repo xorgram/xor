@@ -7,6 +7,7 @@ import escape from 'html-escape'
 
 import { Module, isModule } from './module'
 import { CommandHandler } from './handlers'
+import { updateMessage } from './helpers'
 import { getHelp } from '.'
 
 export function managerModule(manager: ModuleManager): Module {
@@ -28,31 +29,26 @@ export function managerModule(manager: ModuleManager): Module {
 					return
 				}
 				const result = await client.downloadMedia(media, {})
+				if (!result) {
+					await updateMessage(event, 'Could not download the module.')
+					return
+				}
 				const spec = join('externals', '.' + media.document.id + '.js')
 				await fs.writeFile(spec, result)
 				let module
 				try {
 					module = await ModuleManager.file(spec)
 				} catch (err) {
-					await event.message.edit({
-						text:
-							event.message.text +
-							'\n' +
-							'The replied file is not a valid module.'
-					})
+					await updateMessage(event, 'The replied file is not a valid module.')
 					return
 				}
 				if (manager.modules.has(module.name)) {
-					await event.message.edit({
-						text: event.message.text + '\n' + 'Module already installed.'
-					})
+					await updateMessage(event, 'Module already installed.')
 					return
 				}
 				await fs.rename(spec, join('externals', module.name + '.js'))
 				manager.install(module, true)
-				await event.message.edit({
-					text: event.message.text + '\n' + 'Module installed.'
-				})
+				await updateMessage(event, 'Module installed.')
 			}),
 			new CommandHandler('uninstall', async (_client, event, args) => {
 				let uninstalled = 0
@@ -66,14 +62,12 @@ export function managerModule(manager: ModuleManager): Module {
 						//
 					}
 				}
-				await event.message.edit({
-					text:
-						event.message.text +
-						'\n' +
-						`${uninstalled <= 0 ? 'No' : uninstalled} module${
-							uninstalled == 1 ? '' : 's'
-						} uninstalled.`
-				})
+				await updateMessage(
+					event,
+					`${uninstalled <= 0 ? 'No' : uninstalled} module${
+						uninstalled == 1 ? '' : 's'
+					} uninstalled.`
+				)
 			}),
 			new CommandHandler('disable', async (_client, event, args) => {
 				if (args.length == 0) {
@@ -86,14 +80,12 @@ export function managerModule(manager: ModuleManager): Module {
 						disabled++
 					}
 				}
-				await event.message.edit({
-					text:
-						event.message.text +
-						'\n' +
-						`${disabled <= 0 ? 'No' : disabled} module${
-							disabled == 1 ? '' : 's'
-						} disabled.`
-				})
+				await updateMessage(
+					event,
+					`${disabled <= 0 ? 'No' : disabled} module${
+						disabled == 1 ? '' : 's'
+					} disabled.`
+				)
 			}),
 			new CommandHandler('enable', async (_client, event, args) => {
 				if (args.length == 0) {
@@ -106,14 +98,12 @@ export function managerModule(manager: ModuleManager): Module {
 						enabled++
 					}
 				}
-				await event.message.edit({
-					text:
-						event.message.text +
-						'\n' +
-						`${enabled <= 0 ? 'No' : enabled} module${
-							enabled == 1 ? '' : 's'
-						} enabled.`
-				})
+				await updateMessage(
+					event,
+					`${enabled <= 0 ? 'No' : enabled} module${
+						enabled == 1 ? '' : 's'
+					} enabled.`
+				)
 			}),
 			new CommandHandler('modules', async (_client, event) => {
 				const all = Array.from(manager.modules.values())
@@ -140,24 +130,17 @@ export function managerModule(manager: ModuleManager): Module {
 			new CommandHandler('help', async (_client, event, args) => {
 				const name = args[0]
 				if (!name) {
-					await event.message.edit({
-						text:
-							event.message.text + '\n' + 'Pass a module name as an argument.'
-					})
+					await updateMessage(event, 'Pass a module name as an argument.')
 					return
 				}
 				const module = manager.modules.get(name)
 				if (!module) {
-					await event.message.edit({
-						text: event.message.text + '\n' + 'This module is not installed.'
-					})
+					await updateMessage(event, 'This module is not installed.')
 					return
 				}
 				const message = getHelp(module[0])
 				if (!message) {
-					await event.message.edit({
-						text: event.message.text + '\n' + 'This module has no help.'
-					})
+					await updateMessage(event, 'This module has no help.')
 					return
 				}
 				await event.message.reply({ message })

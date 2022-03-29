@@ -45,6 +45,10 @@ const files: Module = {
 				}
 				await updateMessage(event, 'Downloading...')
 				const mediaBuffer = await client.downloadMedia(media, {})
+				if (!mediaBuffer) {
+					await updateMessage(event, 'Download failed.')
+					return
+				}
 				const spec = join('downloads', filename)
 				await fs.mkdir(join('downloads'), { recursive: true })
 				await fs.writeFile(spec, mediaBuffer)
@@ -106,9 +110,18 @@ const files: Module = {
 				}
 				await updateMessage(event, 'Downloading...')
 				const mediaBuffer = await client.downloadMedia(media, {})
+				if (!mediaBuffer) {
+					await updateMessage(event, 'Download failed.')
+					return
+				}
 				await updateMessage(event, 'Uploading...')
 				await client.sendFile(event.chatId, {
-					file: new CustomFile(args[0], mediaBuffer.length, '', mediaBuffer),
+					file: new CustomFile(
+						args[0],
+						mediaBuffer.length,
+						'',
+						Buffer.from(mediaBuffer)
+					),
 					forceDocument: true
 				})
 				await updateMessage(event, `Renamed to ${args[0]}.`)
