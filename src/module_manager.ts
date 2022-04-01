@@ -9,6 +9,8 @@ import { Module, isModule, getHelp } from './module'
 import { CommandHandler } from './handlers'
 import { updateMessage } from './helpers'
 
+const externals = join(__dirname, '..', 'externals')
+
 export function managerModule(manager: ModuleManager): Module {
 	return {
 		name: 'manager',
@@ -32,7 +34,7 @@ export function managerModule(manager: ModuleManager): Module {
 					await updateMessage(event, 'Could not download the module.')
 					return
 				}
-				const spec = join('externals', '.' + media.document.id + '.js')
+				const spec = join(externals, `.${media.document.id}.js`)
 				await fs.writeFile(spec, result)
 				let module
 				try {
@@ -45,7 +47,7 @@ export function managerModule(manager: ModuleManager): Module {
 					await updateMessage(event, 'Module already installed.')
 					return
 				}
-				await fs.rename(spec, join('externals', module.name + '.js'))
+				await fs.rename(spec, join(externals, `${module.name}.js`))
 				manager.install(module, true)
 				await updateMessage(event, 'Module installed.')
 			}),
