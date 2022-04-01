@@ -7,5 +7,6 @@ tar xf $ARCHIVE_NAME
 rm $ARCHIVE_NAME
 mv package/* .
 rmdir package
-npm i --production
+
+npm i --production --ignore-scripts
 npm start
