@@ -21,7 +21,7 @@
 		"prepublishOnly": "npm run build",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"lint": "eslint . --ext .ts --max-warnings=0",
-		"prepare": "if type husky > /dev/null; then husky install; fi",
+		"prepare": "husky install || true",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts"
 	},
 	"dependencies": {
