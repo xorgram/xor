@@ -5,6 +5,7 @@ LATEST_TAG=$(wget -qO- https://api.github.com/repos/xorgram/xor/releases/latest 
 wget https://github.com/xorgram/xor/releases/download/$LATEST_TAG/$ARCHIVE_NAME -O $ARCHIVE_NAME
 tar xf $ARCHIVE_NAME
 rm $ARCHIVE_NAME
+rm -rf dist
 mv package/* .
 rmdir package
 
