@@ -5,10 +5,9 @@ import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
 import escape from 'html-escape'
 
-import { Module, isModule } from './module'
+import { Module, isModule, getHelp } from './module'
 import { CommandHandler } from './handlers'
 import { updateMessage } from './helpers'
-import { getHelp } from '.'
 
 export function managerModule(manager: ModuleManager): Module {
 	return {

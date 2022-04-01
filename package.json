@@ -2,7 +2,6 @@
 	"name": "@xorgram/xor",
 	"version": "0.0.7",
 	"license": "LGPL-3.0",
-	"bin": "bin/index.js",
 	"main": "dist/index.js",
 	"authors": [
 		{
@@ -15,14 +14,15 @@
 		}
 	],
 	"scripts": {
-		"prepare": "husky install",
+		"start": "node dist",
+		"test": "ts-node src",
 		"build": "rimraf dist && tsc",
 		"fix": "npm run lint -- --fix",
-		"test": "npm run build && node bin",
+		"prepublishOnly": "npm run build",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"lint": "eslint . --ext .ts --max-warnings=0",
-		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts",
-		"prepublishOnly": "npm run build"
+		"prepare": "if type husky > /dev/null; then husky install; fi",
+		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts"
 	},
 	"dependencies": {
 		"@xorgram/methods": "^0.0.1-beta.1",
@@ -45,7 +45,8 @@
 		"husky": "^7.0.4",
 		"lint-staged": "^12.3.7",
 		"prettier": "^2.6.1",
-		"rimraf": "^3.0.2"
+		"rimraf": "^3.0.2",
+		"ts-node": "^10.7.0"
 	},
 	"lint-staged": {
 		"src/**/*.ts": [
