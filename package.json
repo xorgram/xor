@@ -16,12 +16,12 @@
 	"scripts": {
 		"start": "node dist",
 		"test": "ts-node src",
+		"prepare": "husky install",
 		"build": "rimraf dist && tsc",
 		"fix": "npm run lint -- --fix",
 		"prepublishOnly": "npm run build",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"lint": "eslint . --ext .ts --max-warnings=0",
-		"prepare": "husky install",
 		"preversion": "echo \"export const version = \\\"\"$npm_new_version\"\\\"\" > src/constants.ts && git add src/constants.ts"
 	},
 	"dependencies": {
