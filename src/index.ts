@@ -32,7 +32,10 @@ async function start() {
 		false
 	)
 	manager.install(managerModule(manager), false)
-	manager.installMultiple(await ModuleManager.directory('externals'), true)
+	manager.installMultiple(
+		await ModuleManager.directory(join(__dirname, '..', 'externals')),
+		true
+	)
 	client.addEventHandler(manager.handler, new NewMessage({}))
 	await client.start({ botAuthToken: '' })
 	started = true
