@@ -33,7 +33,7 @@ async function start() {
 	)
 	manager.install(managerModule(manager), false)
 	manager.installMultiple(
-		await ModuleManager.directory(join(process.cwd(), 'externals')),
+		await ModuleManager.directory(join(__dirname, '..', 'externals')),
 		true
 	)
 	client.addEventHandler(manager.handler, new NewMessage({}))
