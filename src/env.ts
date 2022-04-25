@@ -6,5 +6,6 @@ config()
 export default cleanEnv(process.env, {
 	STRING_SESSION: str(),
 	APP_ID: num(),
-	APP_HASH: str()
+	APP_HASH: str(),
+	DATABASE_URI: str()
 })
