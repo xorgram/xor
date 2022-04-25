@@ -7,5 +7,5 @@ export default cleanEnv(process.env, {
 	STRING_SESSION: str(),
 	APP_ID: num(),
 	APP_HASH: str(),
-	DATABASE_URI: str()
+	DATABASE_URI: str({ default: '' })
 })
