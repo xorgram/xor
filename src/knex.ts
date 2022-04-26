@@ -1,14 +1,14 @@
 import { knex as _knex, Knex } from 'knex'
 import env from './env'
 
-class SingletonKnex {
+export default class SingletonKnex {
 	private static instance: Knex
 	private constructor() {
 		//
 	}
 	public static getInstance(): Knex {
 		if (!env.DATABASE_URI) {
-			return <Knex>{}
+			throw new Error('DATABASE_URI variable not found')
 		}
 		if (!SingletonKnex.instance) {
 			SingletonKnex.instance = _knex({
@@ -19,5 +19,3 @@ class SingletonKnex {
 		return SingletonKnex.instance
 	}
 }
-
-export default SingletonKnex.getInstance()
