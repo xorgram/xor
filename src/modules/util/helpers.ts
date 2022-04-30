@@ -1,7 +1,6 @@
-import { TelegramClient, Api } from 'telegram'
-import { Entity } from 'telegram/define'
-
 import escape from 'html-escape'
+import { Api, TelegramClient } from 'telegram'
+import { Entity } from 'telegram/define'
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`
 

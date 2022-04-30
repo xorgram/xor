@@ -1,6 +1,6 @@
 import { Api, TelegramClient } from 'telegram'
-import { NewMessageEvent } from 'telegram/events'
 import { RPCError } from 'telegram/errors'
+import { NewMessageEvent } from 'telegram/events'
 
 export const getUser = async (
 	event: NewMessageEvent,
