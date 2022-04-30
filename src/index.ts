@@ -1,13 +1,12 @@
-import { join } from 'path'
 import { promises as fs } from 'fs'
-
+import { join } from 'path'
 import { TelegramClient } from 'telegram'
 import { NewMessage } from 'telegram/events'
-import { StringSession } from 'telegram/sessions'
 import { LogLevel } from 'telegram/extensions/Logger'
+import { StringSession } from 'telegram/sessions'
 
-import { managerModule, ModuleManager } from './module_manager'
 import env from './env'
+import { ModuleManager, managerModule } from './module_manager'
 
 async function start() {
 	const client = new TelegramClient(

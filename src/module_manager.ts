@@ -1,13 +1,12 @@
-import { join } from 'path'
 import { promises as fs } from 'fs'
-
+import escape from 'html-escape'
+import { join } from 'path'
 import { Api, TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
-import escape from 'html-escape'
 
-import { Module, isModule, getHelp } from './module'
 import { CommandHandler } from './handlers'
 import { updateMessage } from './helpers'
+import { Module, getHelp, isModule } from './module'
 
 const externals = join(__dirname, '..', 'externals')
 
@@ -249,7 +248,7 @@ export class ModuleManager {
 		if (!isModule(mod)) {
 			throw new Error('Invalid module')
 		}
-		return <Module>mod
+		return mod as Module
 	}
 
 	static async directory(path: string) {

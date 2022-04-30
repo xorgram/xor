@@ -1,5 +1,6 @@
-import { Api } from 'telegram'
 import { Methods } from '@xorgram/methods'
+import { Api } from 'telegram'
+
 import { CommandHandler } from '../../handlers'
 import { Module } from '../../module'
 import { getUser, wrapRpcErrors } from './helpers'
