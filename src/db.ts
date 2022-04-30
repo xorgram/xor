@@ -1,5 +1,6 @@
+import { Knex, knex as _knex } from 'knex'
+
 import env from './env'
-import { knex as _knex, Knex } from 'knex'
 
 let instance: Knex | undefined
 
