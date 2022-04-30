@@ -8,7 +8,7 @@ export const connectable = !!env.DATABASE_URI
 
 export default function db() {
 	if (!connectable) {
-		throw new Error('Cannot connect to a database')
+		throw new Error('Cannot connect to the database')
 	}
 	if (!instance) {
 		instance = _knex({
