@@ -1,12 +1,12 @@
+import { constants } from 'fs'
+import fs from 'fs/promises'
+import { join } from 'path'
 import { Api } from 'telegram'
 import { CustomFile } from 'telegram/client/uploads'
-import fs from 'fs/promises'
-import { constants } from 'fs'
-import { join } from 'path'
 
 import { CommandHandler } from '../../handlers'
-import { Module } from '../../module'
 import { updateMessage } from '../../helpers'
+import { Module } from '../../module'
 import { parseAttributes } from './helpers'
 
 const files: Module = {

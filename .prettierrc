@@ -3,5 +3,8 @@
 	"useTabs": true,
 	"singleQuote": true,
 	"arrowParens": "avoid",
-	"trailingComma": "none"
+	"trailingComma": "none",
+	"importOrder": ["<THIRD_PARTY_MODULES>", "^[./]"],
+	"importOrderSortSpecifiers": true,
+	"importOrderSeparation": true
 }

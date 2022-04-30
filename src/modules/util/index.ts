@@ -1,15 +1,14 @@
-import { exec, spawn } from 'child_process'
-
-import { NodeVM } from 'vm2'
+import { Methods } from '@xorgram/methods'
 import { zero } from 'big-integer'
+import { exec, spawn } from 'child_process'
 import { Api, version as telegramVersion } from 'telegram'
 import { CustomFile } from 'telegram/client/uploads'
-import { Methods } from '@xorgram/methods'
+import { NodeVM } from 'vm2'
 
-import { Module } from '../../module'
-import { wrap } from '../../helpers'
 import { version } from '../../constants'
 import { CommandHandler } from '../../handlers'
+import { wrap } from '../../helpers'
+import { Module } from '../../module'
 import { pre, whois } from './helpers'
 
 const util: Module = {
