@@ -1,24 +1,21 @@
-import { TelegramClient } from 'telegram'
-import { NewMessageEvent } from 'telegram/events'
+import { Handler, IHandler } from './handler'
 
-import { Handler } from './handler'
+export type MessageHandlerFunc<T extends object> = ({
+	client,
+	event,
+	...rest
+}: T & IHandler) => Promise<void>
 
-export type MessageHandlerFunc = (
-	client: TelegramClient,
-	event: NewMessageEvent,
-	..._: any // eslint-disable-line @typescript-eslint/no-explicit-any
-) => Promise<void>
-
-export class MessageHandler extends Handler {
+export class MessageHandler<T extends object> extends Handler {
 	out?: boolean
 	scope?: 'all' | 'group' | 'private' | 'channel'
 	allowForward?: boolean
 
-	constructor(public func: MessageHandlerFunc) {
+	constructor(public func: MessageHandlerFunc<T>) {
 		super()
 	}
 
-	async check(_client: TelegramClient, event: NewMessageEvent) {
+	async check({ event }: IHandler) {
 		if (this.out !== undefined && this.out !== event.message.out) {
 			return false
 		}
@@ -40,7 +37,7 @@ export class MessageHandler extends Handler {
 		return true
 	}
 
-	handle(client: TelegramClient, event: NewMessageEvent) {
-		return this.func(client, event)
+	handle({ client, event, ...rest }: IHandler & T) {
+		return this.func({ client, event, ...(rest as T) })
 	}
 }

@@ -1,11 +1,13 @@
 import { TelegramClient } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
 
-export abstract class Handler {
-	abstract check(
-		client: TelegramClient,
-		event: NewMessageEvent
-	): Promise<boolean>
+export interface IHandler {
+	client: TelegramClient
+	event: NewMessageEvent
+}
 
-	abstract handle(client: TelegramClient, event: NewMessageEvent): Promise<void>
+export abstract class Handler {
+	abstract check({ client, event }: IHandler): Promise<boolean>
+
+	abstract handle({ client, event }: IHandler): Promise<void>
 }

@@ -14,7 +14,7 @@ const files: Module = {
 	handlers: [
 		new CommandHandler(
 			'download',
-			async (client, event) => {
+			async ({ client, event }) => {
 				const media = (await event.message.getReplyMessage())?.media
 				if (!media) {
 					await updateMessage(event, 'Reply a file to download.')
@@ -62,7 +62,7 @@ const files: Module = {
 		),
 		new CommandHandler(
 			'upload',
-			async (client, event, args) => {
+			async ({ client, event, args }) => {
 				if (!args || !args.length) {
 					await event.message.edit({
 						text: event.message.text + '\nProvide a file path to upload.'
@@ -95,7 +95,7 @@ const files: Module = {
 		),
 		new CommandHandler(
 			'rnupload',
-			async (client, event, args) => {
+			async ({ client, event, args }) => {
 				if (!args || !args.length) {
 					await updateMessage(event, 'Provide a new name.')
 					return
@@ -130,7 +130,7 @@ const files: Module = {
 		),
 		new CommandHandler(
 			'listdl',
-			async (_client, event) => {
+			async ({ event }) => {
 				const files = await fs.readdir(join(process.cwd(), 'downloads'))
 				await updateMessage(
 					event,

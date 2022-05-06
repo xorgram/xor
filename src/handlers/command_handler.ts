@@ -1,14 +1,16 @@
-import { TelegramClient } from 'telegram'
-import { NewMessageEvent } from 'telegram/events'
-
+import { IHandler } from './handler'
 import { MessageHandler } from './message_handler'
 
-export type CommandHandlerFunc = (
-	client: TelegramClient,
-	event: NewMessageEvent,
-	args: string[],
+interface CHParams {
+	args: string[]
 	input: string
-) => Promise<void>
+}
+
+export type CommandHandlerFunc<T extends object> = ({
+	client,
+	event,
+	...rest
+}: IHandler & T) => Promise<void>
 
 export interface CommandHandlerOpts {
 	aliases?: string[]
@@ -16,12 +18,12 @@ export interface CommandHandlerOpts {
 	rawInput?: boolean
 }
 
-export class CommandHandler extends MessageHandler {
+export class CommandHandler extends MessageHandler<CHParams> {
 	opts: CommandHandlerOpts
 
 	constructor(
 		public name: string,
-		public func: CommandHandlerFunc,
+		public func: CommandHandlerFunc<CHParams>,
 		opts?: CommandHandlerOpts
 	) {
 		super(func)
@@ -29,8 +31,8 @@ export class CommandHandler extends MessageHandler {
 		this.opts.rawInput = this.opts.rawInput ?? true
 	}
 
-	async check(client: TelegramClient, event: NewMessageEvent) {
-		if (!(await super.check(client, event))) {
+	async check({ client, event }: IHandler) {
+		if (!(await super.check({ client, event }))) {
 			return false
 		}
 		const { text } = event.message
@@ -41,7 +43,7 @@ export class CommandHandler extends MessageHandler {
 		return this.name == command || !!this.opts?.aliases?.includes(command)
 	}
 
-	async handle(client: TelegramClient, event: NewMessageEvent) {
+	async handle({ client, event }: IHandler) {
 		const { text, message } = event.message
 		const args = (this.opts?.rawArgs ? message : text)
 			.split('\n')[0]
@@ -63,6 +65,6 @@ export class CommandHandler extends MessageHandler {
 					input = this.opts?.rawInput ? reply.message : reply.text
 				}
 		}
-		await this.func(client, event, args, input)
+		await this.func({ client, event, args, input })
 	}
 }

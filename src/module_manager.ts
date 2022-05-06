@@ -14,7 +14,7 @@ export function managerModule(manager: ModuleManager): Module {
 	return {
 		name: 'manager',
 		handlers: [
-			new CommandHandler('install', async (client, event) => {
+			new CommandHandler('install', async ({ client, event }) => {
 				const reply = await event.message.getReplyMessage()
 				if (!reply) {
 					return
@@ -50,7 +50,7 @@ export function managerModule(manager: ModuleManager): Module {
 				manager.install(module, true)
 				await updateMessage(event, 'Module installed.')
 			}),
-			new CommandHandler('uninstall', async (_client, event, args) => {
+			new CommandHandler('uninstall', async ({ event, args }) => {
 				let uninstalled = 0
 				for (const arg of args) {
 					const spec = join('externals', arg + '.js')
@@ -69,7 +69,7 @@ export function managerModule(manager: ModuleManager): Module {
 					} uninstalled.`
 				)
 			}),
-			new CommandHandler('disable', async (_client, event, args) => {
+			new CommandHandler('disable', async ({ event, args }) => {
 				if (args.length == 0) {
 					return
 				}
@@ -87,7 +87,7 @@ export function managerModule(manager: ModuleManager): Module {
 					} disabled.`
 				)
 			}),
-			new CommandHandler('enable', async (_client, event, args) => {
+			new CommandHandler('enable', async ({ event, args }) => {
 				if (args.length == 0) {
 					return
 				}
@@ -105,7 +105,7 @@ export function managerModule(manager: ModuleManager): Module {
 					} enabled.`
 				)
 			}),
-			new CommandHandler('modules', async (_client, event) => {
+			new CommandHandler('modules', async ({ event }) => {
 				const all = Array.from(manager.modules.values())
 				const nonDisableables = all
 					.filter(([, disableable]) => !disableable)
@@ -127,7 +127,7 @@ export function managerModule(manager: ModuleManager): Module {
 				}
 				await event.message.reply({ message })
 			}),
-			new CommandHandler('help', async (_client, event, args) => {
+			new CommandHandler('help', async ({ event, args }) => {
 				const name = args[0]
 				if (!name) {
 					await updateMessage(event, 'Pass a module name as an argument.')
@@ -194,9 +194,9 @@ export class ModuleManager {
 				return
 			}
 			for (const handler of handlers) {
-				if (await handler.check(this.client, event)) {
+				if (await handler.check({ client: this.client, event })) {
 					try {
-						await handler.handle(this.client, event)
+						await handler.handle({ client: this.client, event })
 					} catch (err) {
 						console.error(err)
 						try {
