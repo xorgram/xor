@@ -14,7 +14,7 @@ import { pre, whois } from './helpers'
 const util: Module = {
 	name: 'util',
 	handlers: [
-		new CommandHandler('ping', async (client, event) => {
+		new CommandHandler('ping', async ({ client, event }) => {
 			const before = Date.now()
 			await client.invoke(new Api.Ping({ pingId: zero }))
 			const diff = Date.now() - before
@@ -24,7 +24,7 @@ const util: Module = {
 		}),
 		new CommandHandler(
 			'shell',
-			async (_client, event, args, input) => {
+			async ({ event, args, input }) => {
 				if (args.length < 1) {
 					return
 				}
@@ -102,7 +102,7 @@ const util: Module = {
 				aliases: ['sh', 'cmd', 'exec']
 			}
 		),
-		new CommandHandler('uptime', async (_client, event) => {
+		new CommandHandler('uptime', async ({ event }) => {
 			let seconds = Math.floor(process.uptime())
 			const hours = Math.floor(seconds / 3600)
 			const minutes = Math.floor((seconds - hours * 3600) / 60)
@@ -118,7 +118,7 @@ const util: Module = {
 		}),
 		new CommandHandler(
 			'version',
-			async (_client, event) => {
+			async ({ event }) => {
 				await event.message.edit({
 					text:
 						event.message.text +
@@ -135,7 +135,7 @@ const util: Module = {
 			},
 			{ aliases: ['v'] }
 		),
-		new CommandHandler('whois', async (client, event, args) => {
+		new CommandHandler('whois', async ({ client, event, args }) => {
 			let info = ''
 			if (args[0] !== undefined && args[0].length != 0) {
 				const entity = await client.getEntity(args[0])
@@ -169,7 +169,7 @@ const util: Module = {
 				parseMode: 'html'
 			})
 		}),
-		new CommandHandler('eval', async (client, event, _args, input) => {
+		new CommandHandler('eval', async ({ client, event, input }) => {
 			const message = event.message
 			const reply = await event.message.getReplyMessage()
 			const vm = new NodeVM({
