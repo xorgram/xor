@@ -1,7 +1,7 @@
-import { IHandler } from './handler'
+import { HandlerFuncParams } from './handler'
 import { MessageHandler } from './message_handler'
 
-interface CHParams {
+export interface CommandHandlerFuncParams {
 	args: string[]
 	input: string
 }
@@ -10,7 +10,7 @@ export type CommandHandlerFunc<T extends object> = ({
 	client,
 	event,
 	...rest
-}: IHandler & T) => Promise<void>
+}: HandlerFuncParams & T) => Promise<void>
 
 export interface CommandHandlerOpts {
 	aliases?: string[]
@@ -18,12 +18,12 @@ export interface CommandHandlerOpts {
 	rawInput?: boolean
 }
 
-export class CommandHandler extends MessageHandler<CHParams> {
+export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
 	opts: CommandHandlerOpts
 
 	constructor(
 		public name: string,
-		public func: CommandHandlerFunc<CHParams>,
+		public func: CommandHandlerFunc<CommandHandlerFuncParams>,
 		opts?: CommandHandlerOpts
 	) {
 		super(func)
@@ -31,7 +31,7 @@ export class CommandHandler extends MessageHandler<CHParams> {
 		this.opts.rawInput = this.opts.rawInput ?? true
 	}
 
-	async check({ client, event }: IHandler) {
+	async check({ client, event }: HandlerFuncParams) {
 		if (!(await super.check({ client, event }))) {
 			return false
 		}
@@ -43,7 +43,7 @@ export class CommandHandler extends MessageHandler<CHParams> {
 		return this.name == command || !!this.opts?.aliases?.includes(command)
 	}
 
-	async handle({ client, event }: IHandler) {
+	async handle({ client, event }: HandlerFuncParams) {
 		const { text, message } = event.message
 		const args = (this.opts?.rawArgs ? message : text)
 			.split('\n')[0]

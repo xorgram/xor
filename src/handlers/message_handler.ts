@@ -1,10 +1,10 @@
-import { Handler, IHandler } from './handler'
+import { Handler, HandlerFuncParams } from './handler'
 
 export type MessageHandlerFunc<T extends object> = ({
 	client,
 	event,
 	...rest
-}: T & IHandler) => Promise<void>
+}: HandlerFuncParams & T) => Promise<void>
 
 export class MessageHandler<T extends object> extends Handler {
 	out?: boolean
@@ -15,7 +15,7 @@ export class MessageHandler<T extends object> extends Handler {
 		super()
 	}
 
-	async check({ event }: IHandler) {
+	async check({ event }: HandlerFuncParams) {
 		if (this.out !== undefined && this.out !== event.message.out) {
 			return false
 		}
@@ -37,7 +37,7 @@ export class MessageHandler<T extends object> extends Handler {
 		return true
 	}
 
-	handle({ client, event, ...rest }: IHandler & T) {
+	handle({ client, event, ...rest }: HandlerFuncParams & T) {
 		return this.func({ client, event, ...(rest as T) })
 	}
 }
