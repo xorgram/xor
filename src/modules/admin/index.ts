@@ -8,7 +8,7 @@ import { getUser, wrapRpcErrors } from './helpers'
 const admin: Module = {
 	name: 'admin',
 	handlers: [
-		new CommandHandler('promote', async (client, event, args) => {
+		new CommandHandler('promote', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -44,7 +44,7 @@ const admin: Module = {
 				})
 			}
 		}),
-		new CommandHandler('demote', async (client, event, args) => {
+		new CommandHandler('demote', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -75,7 +75,7 @@ const admin: Module = {
 				})
 			}
 		}),
-		new CommandHandler('ban', async (client, event, args) => {
+		new CommandHandler('ban', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -98,7 +98,7 @@ const admin: Module = {
 				})
 			})
 		}),
-		new CommandHandler('unban', async (client, event, args) => {
+		new CommandHandler('unban', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -121,7 +121,7 @@ const admin: Module = {
 				})
 			})
 		}),
-		new CommandHandler('pin', async (client, event, args) => {
+		new CommandHandler('pin', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -145,7 +145,7 @@ const admin: Module = {
 				})
 			}
 		}),
-		new CommandHandler('unpin', async (client, event) => {
+		new CommandHandler('unpin', async ({ client, event }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
@@ -175,7 +175,7 @@ const admin: Module = {
 				})
 			}
 		}),
-		new CommandHandler('add', async (client, event, args) => {
+		new CommandHandler('add', async ({ client, event, args }) => {
 			const chat = await event.message.getChat()
 			if (!chat) {
 				return
