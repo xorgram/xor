@@ -1,6 +1,6 @@
 $ARCHIVE_NAME = "archive.tgz"
 
-Invoke-WebRequest -Uri "https://github.com/xorgram/xor/releases/download/latest/$ARCHIVE_NAME" -OutFile $ARCHIVE_NAME
+Invoke-WebRequest -Uri "https://github.com/xorgram/xor/releases/latest/download/$ARCHIVE_NAME" -OutFile $ARCHIVE_NAME
 tar xf $ARCHIVE_NAME
 Remove-Item $ARCHIVE_NAME
 if (Test-Path "dist") {
