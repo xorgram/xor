@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@xorgram/methods": "^0.0.1-beta.1",
 		"big-integer": "^1.6.51",
-		"dotenv": "^16.0.0",
+		"dotenv": "^16.0.1",
 		"envalid": "^7.3.1",
 		"html-escape": "^2.0.0",
 		"knex": "^2.0.0",
