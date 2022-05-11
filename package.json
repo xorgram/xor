@@ -32,7 +32,7 @@
 		"html-escape": "^2.0.0",
 		"knex": "^2.0.0",
 		"pg": "^8.7.3",
-		"telegram": "^2.7.28",
+		"telegram": "^2.7.32",
 		"vm2": "^3.9.9"
 	},
 	"devDependencies": {
