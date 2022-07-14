@@ -1,7 +1,0 @@
-.*rc
-tsconfig.json
-src/
-.husky/
-.github/
-.env
-scripts/
