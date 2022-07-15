@@ -1,5 +1,6 @@
 import { join } from "$deps";
 import { Api } from "$grm";
+import { Buffer } from "$grm/deps.ts";
 import { CustomFile } from "$grm/src/client/uploads.ts";
 
 import { CommandHandler } from "../../handlers/mod.ts";
