@@ -260,9 +260,7 @@ export class ModuleManager {
       if (file.startsWith(".")) {
         continue;
       }
-      file = file.endsWith(".ts") || file.endsWith(".js")
-        ? file.slice(0, -3)
-        : `${file}/mod.ts`;
+      file = file.endsWith(".ts") ? file : `${file}/mod.ts`;
       const spec = join(path, file);
       const mod = await this.file(spec);
       modules.push(mod);
