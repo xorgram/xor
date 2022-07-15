@@ -7,7 +7,6 @@ import { getHelp, isModule, Module } from "./module.ts";
 
 const externals = join(
   dirname(fromFileUrl(import.meta.url)),
-  "..",
   "externals",
 );
 
