@@ -7,7 +7,4 @@ export {
   join,
 } from "https://deno.land/std@0.148.0/path/mod.ts";
 export { Methods } from "https://ghc.deno.dev/xorgram/methods@deno/mod.ts";
-export * from "https://deno.land/x/grm@v0.1.4/mod.ts";
-export * from "https://deno.land/x/grm@v0.1.4/src/client/uploads.ts";
-export * from "https://deno.land/x/grm@v0.1.4/src/define.d.ts";
-export { bigInt } from "https://deno.land/x/grm@v0.1.3/deps.ts";
+export { bigInt } from "https://deno.land/x/grm@v0.1.5/deps.ts";

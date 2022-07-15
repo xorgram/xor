@@ -1,4 +1,4 @@
-import { Api } from "$deps";
+import { Api } from "$grm";
 
 type Nullable<T> = T | null;
 
