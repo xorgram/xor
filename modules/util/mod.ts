@@ -5,7 +5,6 @@ import {
   bold,
   CommandHandler,
   fmt,
-  FormattedString,
   Module,
   pre,
   type Stringable,
