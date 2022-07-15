@@ -23,7 +23,7 @@ export function managerModule(manager: ModuleManager): Module {
         if (
           !(media instanceof Api.MessageMediaDocument) ||
           !(media.document instanceof Api.Document) ||
-          media.document.mimeType != "application/javascript" ||
+          media.document.mimeType != "text/vnd.trolltech.linguist" ||
           media.document.size.gt(5000)
         ) {
           return;
@@ -33,7 +33,7 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "Could not download the module.");
           return;
         }
-        const spec = join(externals, `.${media.document.id}.js`);
+        const spec = join(externals, `.${media.document.id}.ts`);
         await Deno.writeTextFile(
           spec,
           typeof result === "string" ? result : result.toString(),
@@ -49,14 +49,14 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "Module already installed.");
           return;
         }
-        await Deno.rename(spec, join(externals, `${module.name}.js`));
+        await Deno.rename(spec, join(externals, `${module.name}.ts`));
         manager.install(module, true);
         await updateMessage(event, "Module installed.");
       }),
       new CommandHandler("uninstall", async ({ event, args }) => {
         let uninstalled = 0;
         for (const arg of args) {
-          const spec = join("externals", arg + ".js");
+          const spec = join("externals", `${arg}.ts`);
           try {
             await Deno.remove(spec);
             manager.uninstall(arg);
