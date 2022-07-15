@@ -1,6 +1,6 @@
 import { Api, VERSION as telegramVersion } from "$grm";
 import { bigInt } from "$grm/deps.ts";
-import { CommandHandler, Module, version } from "$xor";
+import { CommandHandler, Module, updateMessage, version } from "$xor";
 import { pre, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
@@ -12,9 +12,7 @@ const util: Module = {
       const before = Date.now();
       await client.invoke(new Api.Ping({ pingId: bigInt(0) }));
       const diff = Date.now() - before;
-      await event.message.edit({
-        text: event.message.text + " " + diff + "ms",
-      });
+      await updateMessage(event, `${diff}ms`);
     }),
     new CommandHandler(
       "shell",
@@ -68,21 +66,20 @@ const util: Module = {
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds - hours * 3600) / 60);
       seconds = seconds - hours * 3600 - minutes * 60;
-      await event.message.edit({
-        text: event.message.text +
-          " " +
-          (hours > 0 ? `${hours > 9 ? hours : "0" + hours}:` : "") +
+      // TODO: use deno std for the time format?
+      await updateMessage(
+        event,
+        (hours > 0 ? `${hours > 9 ? hours : "0" + hours}:` : "") +
           `${minutes > 9 ? minutes : "0" + minutes}:` +
           `${seconds > 9 ? seconds : "0" + seconds}`,
-      });
+      );
     }),
     new CommandHandler(
       "version",
       async ({ event }) => {
-        await event.message.edit({
-          text: event.message.text +
-            "\n" +
-            "Deno " +
+        await updateMessage(
+          event,
+          "Deno " +
             Deno.version.deno +
             "\n" +
             "Grm " +
@@ -90,7 +87,7 @@ const util: Module = {
             "Xor " +
             version +
             telegramVersion,
-        });
+        );
       },
       { aliases: ["v"] },
     ),
@@ -123,10 +120,7 @@ const util: Module = {
       if (info.length == 0) {
         return;
       }
-      await event.message.edit({
-        text: event.message.text + "\n\n" + info,
-        parseMode: "html",
-      });
+      await updateMessage(event, `\n${info}`, "html");
     }),
     // new CommandHandler("eval", async ({ client, event, input }) => {
     //   const message = event.message;

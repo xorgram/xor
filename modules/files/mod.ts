@@ -65,9 +65,7 @@ const files: Module = {
       "upload",
       async ({ client, event, args }) => {
         if (!args || !args.length) {
-          await event.message.edit({
-            text: event.message.text + "\nProvide a file path to upload.",
-          });
+          await updateMessage(event, "Provide a file path to upload.");
           return;
         }
         const filePath = join(Deno.cwd(), args[0]);

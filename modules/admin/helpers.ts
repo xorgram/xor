@@ -1,4 +1,5 @@
 import { Api, errors, events, TelegramClient } from "$grm";
+import { updateMessage } from "../../helpers.ts";
 
 export const getUser = async (
   event: events.NewMessageEvent,
@@ -20,9 +21,7 @@ export const getUser = async (
   } else if (args[0] !== undefined && args[0].length != 0) {
     const _entity = await client.getEntity(args[0]);
     if (!(_entity instanceof Api.User)) {
-      await event.message.edit({
-        text: event.message.text + "\n" + "Invalid user ID or username.",
-      });
+      await updateMessage(event, "Invalid user ID/username.");
       return;
     }
     entity = _entity;
@@ -38,7 +37,7 @@ export const getUser = async (
   };
 };
 
-export const ExpectedErrors: { [key: string]: string } = {
+export const expectedErrors: { [key: string]: string } = {
   // Edit Admin Rights
   ADMINS_TOO_MUCH: "There are too many admins.",
   ADMIN_RANK_EMOJI_NOT_ALLOWED: "The admin title cannot contain emojis.",
@@ -81,11 +80,9 @@ export async function wrapRpcErrors(
     await func();
   } catch (error) {
     if (
-      error instanceof errors.RPCError && ExpectedErrors[error["errorMessage"]]
+      error instanceof errors.RPCError && expectedErrors[error["errorMessage"]]
     ) {
-      await event.message.edit({
-        text: event.message.text + "\n" + ExpectedErrors[error["errorMessage"]],
-      });
+      await updateMessage(event, expectedErrors[error["errorMessage"]]);
       return;
     } else {
       throw error;

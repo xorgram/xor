@@ -1,5 +1,5 @@
 import { Api } from "$grm";
-import { CommandHandler, Methods, Module } from "$xor";
+import { CommandHandler, Methods, Module, updateMessage } from "$xor";
 import { getUser, wrapRpcErrors } from "./helpers.ts";
 
 const admin: Module = {
@@ -31,14 +31,10 @@ const admin: Module = {
             canPromoteMembers: chat.adminRights?.addAdmins,
             canRestrictMembers: chat.adminRights?.banUsers,
           });
-          await event.message.edit({
-            text: event.message.text + "\n" + "User promoted.",
-          });
+          await updateMessage(event, "User promoted.");
         });
       } else {
-        await event.message.edit({
-          text: event.message.text + "\n" + "Cannot promote here.",
-        });
+        await updateMessage(event, "Cannot promote here.");
       }
     }),
     new CommandHandler("demote", async ({ client, event, args }) => {
@@ -48,9 +44,7 @@ const admin: Module = {
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await event.message.edit({
-          text: event.message.text + "\n" + "User not found.",
-        });
+        await updateMessage(event, "User not found.");
         return;
       }
       if (chat instanceof Api.Channel) {
@@ -62,14 +56,10 @@ const admin: Module = {
             rank: user.rank,
             canManageChat: false,
           });
-          await event.message.edit({
-            text: event.message.text + "\n" + "User demoted.",
-          });
+          await updateMessage(event, "User demoted.");
         });
       } else {
-        await event.message.edit({
-          text: event.message.text + "\n" + "Cannot demote here.",
-        });
+        await updateMessage(event, "Cannot demote here.");
       }
     }),
     new CommandHandler("ban", async ({ client, event, args }) => {
@@ -79,9 +69,7 @@ const admin: Module = {
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await event.message.edit({
-          text: event.message.text + "\n" + "User not found.",
-        });
+        await updateMessage(event, "User not found.");
         return;
       }
       await wrapRpcErrors(event, async () => {
@@ -90,9 +78,7 @@ const admin: Module = {
           chatId: chat.id,
           userId: await client.getEntity(user.entity),
         });
-        await event.message.edit({
-          text: event.message.text + "\n" + "User banned.",
-        });
+        await updateMessage(event, "User banned.");
       });
     }),
     new CommandHandler("unban", async ({ client, event, args }) => {
@@ -102,9 +88,7 @@ const admin: Module = {
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await event.message.edit({
-          text: event.message.text + "\n" + "User not found.",
-        });
+        await updateMessage(event, "User not found.");
         return;
       }
       await wrapRpcErrors(event, async () => {
@@ -113,9 +97,7 @@ const admin: Module = {
           chatId: chat.id,
           userId: await client.getEntity(user.entity),
         });
-        await event.message.edit({
-          text: event.message.text + "\n" + "User unbanned.",
-        });
+        await updateMessage(event, "User unbanned.");
       });
     }),
     new CommandHandler("pin", async ({ client, event, args }) => {
@@ -132,14 +114,10 @@ const admin: Module = {
             messageId: reply.id,
             disableNotification: args[0] === "silent",
           });
-          await event.message.edit({
-            text: event.message.text + "\n" + "Message pinned.",
-          });
+          await updateMessage(event, "Message pinned.");
         });
       } else {
-        await event.message.edit({
-          text: event.message.text + "\n" + "Reply a the message to pin.",
-        });
+        await updateMessage(event, "Reply a message to pin.");
       }
     }),
     new CommandHandler("unpin", async ({ client, event }) => {
@@ -156,19 +134,16 @@ const admin: Module = {
             messageId: reply.id,
           });
           if (resp instanceof Api.Updates) {
-            await event.message.edit({
-              text: event.message.text +
-                "\n" +
-                (resp.updates.length
-                  ? "Message unpinned."
-                  : "Message was not pinned."),
-            });
+            await updateMessage(
+              event,
+              resp.updates.length
+                ? "Message unpinned."
+                : "Message was not pinned.",
+            );
           }
         });
       } else {
-        await event.message.edit({
-          text: event.message.text + "\n" + "Reply a pinned message to unpin.",
-        });
+        await updateMessage(event, "Reply a pinned message to unpin.");
       }
     }),
     new CommandHandler("add", async ({ client, event, args }) => {
@@ -178,17 +153,13 @@ const admin: Module = {
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await event.message.edit({
-          text: event.message.text + "\n" + "User not found.",
-        });
+        await updateMessage(event, "User not found.");
         return;
       }
       await wrapRpcErrors(event, async () => {
         const xor = new Methods(client);
         await xor.addChatMembers({ chatId: chat, userId: user.entity });
-        await event.message.edit({
-          text: event.message.text + "\n" + "User added.",
-        });
+        await updateMessage(event, "User added.");
       });
     }),
   ],
