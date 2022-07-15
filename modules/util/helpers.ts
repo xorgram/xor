@@ -34,7 +34,7 @@ export async function whois(
     whois += kv("Name", entity.title);
     whois += kv("Username", entity.username);
     whois += kv("Membership", entity.left ? "Not member" : "Member");
-    whois == "\n" + fullChat.about ?? "";
+    whois == "\n" + (fullChat.about ?? "");
   } else if (entity instanceof Api.User) {
     const { fullUser } = await client.invoke(
       new Api.users.GetFullUser({ id: entity.id }),
@@ -46,7 +46,7 @@ export async function whois(
     );
     whois += kv("Name", entity.firstName + " " + (entity.lastName ?? ""));
     whois += kv("Username", entity.username);
-    whois += "\n" + fullUser.about;
+    whois += "\n" + (fullUser.about ?? "");
   } else {
     whois += "Could not resolve whois";
   }
