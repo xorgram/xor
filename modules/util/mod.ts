@@ -1,8 +1,8 @@
-import { Methods } from "../../deps.ts";
+import { Methods } from "$deps";
 // TODO: update import?
 import { bigInt } from "../../deps.ts";
-import { Api, VERSION as telegramVersion } from "../../deps.ts";
-import { CustomFile } from "../../deps.ts";
+import { Api, VERSION as telegramVersion } from "$grm";
+import { CustomFile } from "$grm/src/client/uploads.ts";
 // import { NodeVM } from "vm2";
 
 import { version } from "../../constants.ts";
