@@ -42,7 +42,7 @@ export function managerModule(manager: ModuleManager): Module {
         let module;
         try {
           module = await ModuleManager.file(spec);
-        } catch (err) {
+        } catch (_err) {
           await updateMessage(event, "The replied file is not a valid module.");
           return;
         }
@@ -62,7 +62,7 @@ export function managerModule(manager: ModuleManager): Module {
             await Deno.remove(spec);
             manager.uninstall(arg);
             uninstalled++;
-          } catch (err) {
+          } catch (_err) {
             //
           }
         }

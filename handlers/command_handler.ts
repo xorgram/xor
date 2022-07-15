@@ -6,6 +6,7 @@ export interface CommandHandlerFuncParams {
   input: string;
 }
 
+// deno-lint-ignore ban-types
 export type CommandHandlerFunc<T extends object> = ({
   client,
   event,

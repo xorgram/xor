@@ -1,11 +1,13 @@
 import { Handler, HandlerFuncParams } from "./handler.ts";
 
+// deno-lint-ignore ban-types
 export type MessageHandlerFunc<T extends object> = ({
   client,
   event,
   ...rest
 }: HandlerFuncParams & T) => Promise<void>;
 
+// deno-lint-ignore ban-types
 export class MessageHandler<T extends object> extends Handler {
   out?: boolean;
   scope?: "all" | "group" | "private" | "channel";
