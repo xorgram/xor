@@ -1,8 +1,6 @@
 // This file will include dependencies and helpers for all modules (built-in and externals).
 import { events } from "$grm";
-
-// Re exports from internal dependencies
-export { html, join, toFileUrl } from "./deps.ts";
+import { fmt, Stringable } from "./deps.ts";
 
 export async function wrap(
   event: events.NewMessageEvent,
@@ -24,11 +22,9 @@ export async function wrap(
 
 export async function updateMessage(
   event: events.NewMessageEvent,
-  text: string,
-  pm?: "md" | "markdown" | "html",
+  text: Stringable,
 ) {
-  return await event.message.edit({
-    text: event.message.text + "\n" + text,
-    parseMode: pm,
-  });
+  return await event.message.edit(
+    fmt`${event.message.text}\n${text}`.edit,
+  );
 }

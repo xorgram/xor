@@ -2,13 +2,18 @@ import { Api, VERSION as telegramVersion } from "$grm";
 import { CustomFile } from "$grm/src/client/uploads.ts";
 import { bigInt, Buffer } from "$grm/deps.ts";
 import {
+  bold,
   CommandHandler,
+  fmt,
+  FormattedString,
   Module,
+  pre,
+  type Stringable,
   toFileUrl,
   updateMessage,
   version,
 } from "$xor";
-import { pre, whois } from "./helpers.ts";
+import { whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
 
@@ -68,16 +73,14 @@ const util: Module = {
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
         if (stdout.length > 0 && stdout.length <= 4096) {
-          await event.message.reply({
-            message: pre(stdout),
-            parseMode: "html",
-          });
+          await event.message.reply(
+            pre(stdout.trim(), "").send,
+          );
         }
         if (stderr.length > 0 && stderr.length <= 4096) {
-          await event.message.reply({
-            message: pre(stderr),
-            parseMode: "html",
-          });
+          await event.message.reply(
+            pre(stderr.trim(), "").send,
+          );
         }
         const { code } = await proc.status();
         text += "\n" + `Exited with code ${code}.`;
@@ -118,35 +121,35 @@ V8 ${Deno.version.v8}`,
       { aliases: ["v"] },
     ),
     new CommandHandler("whois", async ({ client, event, args }) => {
-      let info = "";
+      const info = new Array<Stringable>();
       if (args[0] !== undefined && args[0].length != 0) {
         const entity = await client.getEntity(args[0]);
-        info += (await whois(entity, client)).trim() + "\n\n";
+        info.push((await whois(entity, client)).trim() + "\n\n");
       }
       const chat = await event.message.getChat();
       if (chat) {
-        info += "<b>Here</b>" + "\n";
-        info += (await whois(chat, client)).trim() + "\n\n";
+        info.push(fmt`${bold("Here")}\n`);
+        info.push((await whois(chat, client)).trim() + "\n\n");
       }
       const reply = await event.message.getReplyMessage();
       if (reply) {
         const sender = await reply.getSender();
         if (sender) {
-          info += "<b>Reply</b>" + "\n";
-          info += (await whois(sender, client)).trim() + "\n\n";
+          info.push(fmt`${bold("Reply")}\n`);
+          info.push((await whois(sender, client)).trim() + "\n\n");
         }
         if (reply.forward) {
           const sender = await reply.forward.getSender();
           if (sender) {
-            info += "<b>Forwarder</b>" + "\n";
-            info += (await whois(sender, client)).trim() + "\n\n";
+            info.push(fmt`${bold("Forwarder")}\n`);
+            info.push((await whois(sender, client)).trim() + "\n\n");
           }
         }
       }
       if (info.length == 0) {
         return;
       }
-      await updateMessage(event, `\n${info}`, "html");
+      await updateMessage(event, fmt(["\n", ...info.map(() => "")], ...info));
     }),
     new CommandHandler("eval", async ({ client, event, input }) => {
       const path = await Deno.makeTempFile({ suffix: ".ts" });
@@ -168,17 +171,9 @@ V8 ${Deno.version.v8}`,
         result = result.replace(/"/g, "");
       }
       if (result.length <= 4096) {
-        await event.message.reply({
-          message: result,
-          parseMode: undefined,
-          formattingEntities: [
-            new Api.MessageEntityPre({
-              offset: 0,
-              length: result.length,
-              language: "",
-            }),
-          ],
-        });
+        await event.message.reply(
+          pre`${result}`.send,
+        );
       } else {
         const buffer = Buffer.from(result);
         await event.message.reply({

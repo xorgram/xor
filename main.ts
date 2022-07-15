@@ -10,6 +10,7 @@ const client = new TelegramClient(
   {},
 );
 const manager = new ModuleManager(client);
+client.setParseMode(undefined);
 client.setLogLevel(LogLevel.NONE);
 try {
   await Deno.mkdir("externals");

@@ -1,6 +1,6 @@
 import { Api, events, TelegramClient } from "$grm";
 
-import { dirname, fromFileUrl, html, join } from "./deps.ts";
+import { dirname, fromFileUrl, join } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -118,14 +118,14 @@ export function managerModule(manager: ModuleManager): Module {
           .map(([module]) => module.name);
         let message = "**Built-in**\n";
         for (const module of nonDisableables) {
-          message += html(module) + "\n";
+          message += module + "\n";
         }
         message += "\n**Installed**\n";
         if (installed.length == 0) {
           message += "No modules installed.";
         } else {
           for (const module of installed) {
-            message += html(module) + "\n";
+            message += module + "\n";
           }
         }
         await event.message.reply({ message });

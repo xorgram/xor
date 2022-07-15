@@ -1,13 +1,11 @@
 import { Api, TelegramClient } from "$grm";
 import { Entity } from "$grm/src/define.d.ts";
-import { html } from "$xor";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 
 export async function whois(
   entity: Entity,
   client: TelegramClient,
-  escape_ = true,
 ) {
   let whois = "";
   if (entity instanceof Api.Chat) {
@@ -50,10 +48,5 @@ export async function whois(
   } else {
     whois += "Could not resolve whois";
   }
-  if (escape_) {
-    whois = html(whois);
-  }
   return whois;
 }
-
-export const pre = (string: string) => "<pre>" + html(string) + "</pre>";
