@@ -1,4 +1,4 @@
-import { Api, TelegramClient,errors,events } from "$deps";
+import { Api, errors, events, TelegramClient } from "$grm";
 
 export const getUser = async (
   event: events.NewMessageEvent,
@@ -80,7 +80,9 @@ export async function wrapRpcErrors(
   try {
     await func();
   } catch (error) {
-    if (error instanceof errors.RPCError && ExpectedErrors[error["errorMessage"]]) {
+    if (
+      error instanceof errors.RPCError && ExpectedErrors[error["errorMessage"]]
+    ) {
       await event.message.edit({
         text: event.message.text + "\n" + ExpectedErrors[error["errorMessage"]],
       });
