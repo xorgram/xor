@@ -1,12 +1,6 @@
-// TODO: update import?
-import { bigInt } from "$deps";
 import { Api, VERSION as telegramVersion } from "$grm";
-
-// import { NodeVM } from "vm2";
-
-import { version } from "../../constants.ts";
-import { CommandHandler } from "../../handlers/mod.ts";
-import { Module } from "../../module.ts";
+import { bigInt } from "$grm/deps.ts";
+import { CommandHandler, Module, version } from "$xor";
 import { pre, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
@@ -37,7 +31,7 @@ const util: Module = {
           stderr: "piped",
           stdin: input.length == 0 ? undefined : "piped",
         });
-        text = `[${proc.pid}]` + text;
+        text = `[${proc.pid}]${text}`;
         await event.message.edit({ text });
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();

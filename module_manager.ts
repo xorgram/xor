@@ -1,6 +1,6 @@
-import { dirname, fromFileUrl, html, join } from "$deps";
 import { Api, events, TelegramClient } from "$grm";
 
+import { dirname, fromFileUrl, html, join } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";

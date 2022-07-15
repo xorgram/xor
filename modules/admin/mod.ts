@@ -1,8 +1,5 @@
-import { Methods } from "$deps";
 import { Api } from "$grm";
-
-import { CommandHandler } from "../../handlers/mod.ts";
-import { Module } from "../../module.ts";
+import { CommandHandler, Methods, Module } from "$xor";
 import { getUser, wrapRpcErrors } from "./helpers.ts";
 
 const admin: Module = {

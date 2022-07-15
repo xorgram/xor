@@ -1,11 +1,7 @@
-import { join } from "$deps";
 import { Api } from "$grm";
-import { Buffer } from "$grm/deps.ts";
 import { CustomFile } from "$grm/src/client/uploads.ts";
-
-import { CommandHandler } from "../../handlers/mod.ts";
-import { updateMessage } from "../../helpers.ts";
-import { Module } from "../../module.ts";
+import { Buffer } from "$grm/deps.ts";
+import { CommandHandler, join, Module, updateMessage } from "$xor";
 import { parseAttributes } from "./helpers.ts";
 
 const files: Module = {

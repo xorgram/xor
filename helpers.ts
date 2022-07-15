@@ -1,4 +1,8 @@
+// This file will include dependencies and helpers for all modules (built-in and externals).
 import { events } from "$grm";
+
+// Re exports from internal dependencies
+export { html, join } from "./deps.ts";
 
 export async function wrap(
   event: events.NewMessageEvent,

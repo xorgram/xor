@@ -1,6 +1,6 @@
-import { html } from "$deps";
 import { Api, TelegramClient } from "$grm";
 import { Entity } from "$grm/src/define.d.ts";
+import { html } from "$xor";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 

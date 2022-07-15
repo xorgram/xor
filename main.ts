@@ -1,6 +1,5 @@
-import { dirname, fromFileUrl, join } from "$deps";
 import { events, LogLevel, StringSession, TelegramClient } from "$grm";
-
+import { dirname, fromFileUrl, join } from "./deps.ts";
 import env from "./env.ts";
 import { managerModule, ModuleManager } from "./module_manager.ts";
 
