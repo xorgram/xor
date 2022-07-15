@@ -1,4 +1,4 @@
-import { Api } from "../../deps.ts";
+import { Api } from "$deps";
 
 type Nullable<T> = T | null;
 

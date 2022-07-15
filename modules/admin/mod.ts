@@ -1,4 +1,4 @@
-import { Methods } from "../../deps.ts";
+import { Methods } from "$deps";
 import { Api } from "$grm";
 
 import { CommandHandler } from "../../handlers/mod.ts";

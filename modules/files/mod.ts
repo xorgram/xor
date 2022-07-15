@@ -1,5 +1,6 @@
-import { join } from "../../deps.ts";
-import { Api,CustomFile } from "../../deps.ts";
+import { join } from "$deps";
+import { Api } from "$grm";
+import { CustomFile } from "$grm/src/client/uploads.ts";
 
 import { CommandHandler } from "../../handlers/mod.ts";
 import { updateMessage } from "../../helpers.ts";
@@ -136,7 +137,7 @@ const files: Module = {
       "listdl",
       async ({ event }) => {
         const files = [...Deno.readDirSync(join(Deno.cwd(), "downloads"))].map(
-          (v) => v.name
+          (v) => v.name,
         );
         await updateMessage(
           event,

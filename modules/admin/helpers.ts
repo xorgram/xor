@@ -1,4 +1,4 @@
-import { Api, TelegramClient,errors,events } from "../../deps.ts";
+import { Api, TelegramClient,errors,events } from "$deps";
 
 export const getUser = async (
   event: events.NewMessageEvent,
