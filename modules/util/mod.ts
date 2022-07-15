@@ -1,9 +1,37 @@
 import { Api, VERSION as telegramVersion } from "$grm";
-import { bigInt } from "$grm/deps.ts";
-import { CommandHandler, Module, updateMessage, version } from "$xor";
+import { CustomFile } from "$grm/src/client/uploads.ts";
+import { bigInt, Buffer } from "$grm/deps.ts";
+import {
+  CommandHandler,
+  Module,
+  toFileUrl,
+  updateMessage,
+  version,
+} from "$xor";
 import { pre, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
+
+const EVAL_HEADER =
+  `import { Api, type events, type TelegramClient } from "$grm";
+import { Methods } from "$xor";
+
+interface EvalParams {
+  client: TelegramClient;
+  event: events.NewMessageEvent;
+}
+
+export async function eval_({ client, event }: EvalParams): Promise<any> {
+  const c = client;
+  const e = event;
+  const message = event.message;
+  const m = message;
+  const methods = new Methods(client);
+  const reply = await message.getReplyMessage();
+  const r = reply;
+`;
+
+const EVAL_FOOTER = "}\n";
 
 const util: Module = {
   name: "util",
@@ -79,14 +107,12 @@ const util: Module = {
       async ({ event }) => {
         await updateMessage(
           event,
-          "Deno " +
-            Deno.version.deno +
-            "\n" +
-            "Grm " +
-            "\n" +
-            "Xor " +
-            version +
-            telegramVersion,
+          `Grm ${telegramVersion}
+Xor ${version}
+
+Deno ${Deno.version.deno}
+TypeScript ${Deno.version.typescript}
+V8 ${Deno.version.v8}`,
         );
       },
       { aliases: ["v"] },
@@ -122,56 +148,44 @@ const util: Module = {
       }
       await updateMessage(event, `\n${info}`, "html");
     }),
-    // new CommandHandler("eval", async ({ client, event, input }) => {
-    //   const message = event.message;
-    //   const reply = await event.message.getReplyMessage();
-    //   const vm = new NodeVM({
-    //     sandbox: {
-    //       client,
-    //       c: client,
-    //       event,
-    //       e: event,
-    //       message,
-    //       m: message,
-    //       reply,
-    //       r: reply,
-    //       Api,
-    //       methods: new Methods(client),
-    //     },
-    //   });
-    //   let result = JSON.stringify(
-    //     await vm.run(`module.exports = (async () => {\n${input}\n})()`),
-    //     null,
-    //     2,
-    //   );
-    //   if (!result) {
-    //     await event.message.reply({
-    //       message: "No output.",
-    //     });
-    //     return;
-    //   }
-    //   if (result.startsWith('"')) {
-    //     result = result.replace(/"/g, "");
-    //   }
-    //   if (result.length <= 4096) {
-    //     await event.message.reply({
-    //       message: result,
-    //       parseMode: undefined,
-    //       formattingEntities: [
-    //         new Api.MessageEntityPre({
-    //           offset: 0,
-    //           length: result.length,
-    //           language: "",
-    //         }),
-    //       ],
-    //     });
-    //   } else {
-    //     const buffer = Buffer.from(result);
-    //     await event.message.reply({
-    //       file: new CustomFile("result.txt", buffer.length, "", buffer),
-    //     });
-    //   }
-    // }),
+    new CommandHandler("eval", async ({ client, event, input }) => {
+      const path = await Deno.makeTempFile({ suffix: ".ts" });
+      await Deno.writeTextFile(path, `${EVAL_HEADER}${input}${EVAL_FOOTER}`);
+      const { eval_ } = await import(toFileUrl(path).href);
+      await Deno.remove(path);
+      let result = JSON.stringify(
+        await eval_({ client, event }),
+        null,
+        4,
+      );
+      if (!result) {
+        await event.message.reply({
+          message: "No output.",
+        });
+        return;
+      }
+      if (result.startsWith('"')) {
+        result = result.replace(/"/g, "");
+      }
+      if (result.length <= 4096) {
+        await event.message.reply({
+          message: result,
+          parseMode: undefined,
+          formattingEntities: [
+            new Api.MessageEntityPre({
+              offset: 0,
+              length: result.length,
+              language: "",
+            }),
+          ],
+        });
+      } else {
+        const buffer = Buffer.from(result);
+        await event.message.reply({
+          file: new CustomFile("result.txt", buffer.length, "", buffer),
+        });
+      }
+    }),
   ],
   help: `
 **Introduction**

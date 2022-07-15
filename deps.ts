@@ -5,5 +5,6 @@ export {
   dirname,
   fromFileUrl,
   join,
+  toFileUrl
 } from "https://deno.land/std@0.148.0/path/mod.ts";
 export { html } from "https://deno.land/x/esc@0.0.0/mod.ts";

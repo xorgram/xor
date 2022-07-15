@@ -2,7 +2,7 @@
 import { events } from "$grm";
 
 // Re exports from internal dependencies
-export { html, join } from "./deps.ts";
+export { html, join, toFileUrl } from "./deps.ts";
 
 export async function wrap(
   event: events.NewMessageEvent,
