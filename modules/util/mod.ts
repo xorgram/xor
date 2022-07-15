@@ -127,13 +127,13 @@ const util: Module = {
         await event.message.edit({
           text: event.message.text +
             "\n" +
-            "Xor " +
-            version +
-            "\n" +
-            "Node.js " +
+            "Deno " +
             Deno.version.deno +
             "\n" +
-            "Gram.js " +
+            "Grm " +
+            "\n" +
+            "Xor " +
+            version +
             telegramVersion,
         });
       },
