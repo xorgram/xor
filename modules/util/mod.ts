@@ -9,6 +9,8 @@ import { CommandHandler } from "../../handlers/mod.ts";
 import { Module } from "../../module.ts";
 import { whois } from "./helpers.ts";
 
+const LOAD_TIME = Date.now();
+
 const util: Module = {
   name: "util",
   handlers: [
@@ -104,9 +106,7 @@ const util: Module = {
     // ),
     new CommandHandler("uptime", async ({ event }) => {
       let seconds = Math.floor(
-        // TODO
-        // uptime()
-        0,
+        (Date.now() - LOAD_TIME) / 1000,
       );
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds - hours * 3600) / 60);

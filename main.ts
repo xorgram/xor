@@ -11,7 +11,7 @@ const client = new TelegramClient(
   {},
 );
 const manager = new ModuleManager(client);
-client.setLogLevel(LogLevel.DEBUG);
+client.setLogLevel(LogLevel.NONE);
 try {
   await Deno.mkdir("externals");
 } catch (_err) {
