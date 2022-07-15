@@ -7,7 +7,7 @@ import { Api, VERSION as telegramVersion } from "$grm";
 import { version } from "../../constants.ts";
 import { CommandHandler } from "../../handlers/mod.ts";
 import { Module } from "../../module.ts";
-import { whois } from "./helpers.ts";
+import { pre, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
 
@@ -22,88 +22,51 @@ const util: Module = {
         text: event.message.text + " " + diff + "ms",
       });
     }),
-    // new CommandHandler(
-    //   "shell",
-    //   async ({ event, args, input }) => {
-    //     if (args.length < 1) {
-    //       return;
-    //     }
-    //     const command = args[0];
-    //     args = args.slice(1);
-    //     let { text } = event.message;
-    //     text = text.slice(text.split(/\s/)[0].length);
-    //     let pidDisplayed = (_?: unknown) => {}; // eslint-disable-line
-    //     const displayPid = new Promise((r) => (pidDisplayed = r));
-    //     if (input.length == 0) {
-    //       const procc = Deno.run({ cmd: text.split(" ") });
-
-    //       const proc = exec(text, (_err, stdout, stderr) => {
-    //         wrap(event, async () => {
-    //           await displayPid;
-    //           if (stdout.length > 0 && stdout.length <= 4096) {
-    //             await event.message.reply({
-    //               message: pre(stdout),
-    //               parseMode: "html",
-    //             });
-    //           }
-    //           if (stderr.length > 0 && stderr.length <= 4096) {
-    //             await event.message.reply({
-    //               message: pre(stderr),
-    //               parseMode: "html",
-    //             });
-    //           }
-    //         });
-    //       }).on("exit", (code) => {
-    //         wrap(event, async () => {
-    //           await displayPid;
-    //           if (code) {
-    //             text += "\n" + `Exited with code ${code}.`;
-    //             await event.message.edit({ text });
-    //           }
-    //         });
-    //       });
-    //       text = `[${proc.pid}]` + text;
-    //       await event.message.edit({ text });
-    //       pidDisplayed();
-    //       return;
-    //     }
-    //     const stdoutChunks = new Array<Buffer>();
-    //     const stderrChunks = new Array<Buffer>();
-    //     const proc = spawn(command, args).on("close", (code) => {
-    //       wrap(event, async () => {
-    //         await displayPid;
-    //         if (code != null) {
-    //           text += "\n" + `Exited with code ${code}.`;
-    //           await event.message.edit({ text });
-    //         }
-    //         const stdout = stdoutChunks.map(String).join("");
-    //         const stderr = stderrChunks.map(String).join("");
-    //         if (stdout.length > 0 && stdout.length <= 4096) {
-    //           await event.message.reply({
-    //             message: pre(stdout),
-    //             parseMode: "html",
-    //           });
-    //         }
-    //         if (stderr.length > 0 && stderr.length <= 4096) {
-    //           await event.message.reply({
-    //             message: pre(stderr),
-    //             parseMode: "html",
-    //           });
-    //         }
-    //       });
-    //     });
-    //     proc.stdout.on("data", (c) => stdoutChunks.push(c));
-    //     proc.stderr.on("data", (c) => stderrChunks.push(c));
-    //     text = `[${proc.pid}]` + text;
-    //     await event.message.edit({ text });
-    //     pidDisplayed();
-    //     proc.stdin.write(input);
-    //     proc.stdin.end();
-    //   },
-    //   {
-    //     aliases: ["sh", "cmd", "exec"],
-    //   },
-    // ),
+    new CommandHandler(
+      "shell",
+      async ({ event, args, input }) => {
+        if (args.length < 1) {
+          return;
+        }
+        args = args.slice(1);
+        let { text } = event.message;
+        text = text.slice(text.split(/\s/)[0].length);
+        const proc = Deno.run({
+          cmd: text.trim().split(/\s/),
+          stdout: "piped",
+          stderr: "piped",
+          stdin: input.length == 0 ? undefined : "piped",
+        });
+        text = `[${proc.pid}]` + text;
+        await event.message.edit({ text });
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+        if (input.length != 0) {
+          proc.stdin?.write(encoder.encode(input));
+          proc.stdin?.close();
+        }
+        const stdout = decoder.decode(await proc.output());
+        const stderr = decoder.decode(await proc.stderrOutput());
+        if (stdout.length > 0 && stdout.length <= 4096) {
+          await event.message.reply({
+            message: pre(stdout),
+            parseMode: "html",
+          });
+        }
+        if (stderr.length > 0 && stderr.length <= 4096) {
+          await event.message.reply({
+            message: pre(stderr),
+            parseMode: "html",
+          });
+        }
+        const { code } = await proc.status();
+        text += "\n" + `Exited with code ${code}.`;
+        await event.message.edit({ text });
+      },
+      {
+        aliases: ["sh", "cmd", "exec"],
+      },
+    ),
     new CommandHandler("uptime", async ({ event }) => {
       let seconds = Math.floor(
         (Date.now() - LOAD_TIME) / 1000,
