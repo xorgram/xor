@@ -12,18 +12,17 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
-      lint:
-        - uses: denoland/setup-deno@v1
-          with:
-            deno-version: vx.x.x
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
 
-        - run: deno lint
+      - run: deno lint
 
-      fmt:
-        - uses: denoland/setup-deno@v1
-          with:
-            deno-version: vx.x.x
+  fmt:
+    runs-on: ubuntu-latest
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: vx.x.x
 
-        - run: deno fmt --check
+    - run: deno fmt --check
