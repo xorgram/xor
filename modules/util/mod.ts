@@ -171,7 +171,7 @@ V8 ${Deno.version.v8}`,
       }
       if (result.length <= 4096) {
         await event.message.reply(
-          pre`${result}`.send,
+          pre(result).send,
         );
       } else {
         const buffer = Buffer.from(result);
