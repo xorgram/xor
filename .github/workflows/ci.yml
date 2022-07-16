@@ -5,27 +5,25 @@ on:
     branches-ignore:
       - gh-pages
     paths-ignore:
-      - '**.md'
+      - "**.md"
     tags:
-      - '*'
+      - "*"
 
 jobs:
-  release:
+  lint:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+
     steps:
-      - uses: actions/checkout@v3
+      lint:
+        - uses: denoland/setup-deno@v1
+          with:
+            deno-version: vx.x.x
 
-      - uses: actions/setup-node@v3
-        with:
-          cache: npm
-          node-version: '17.x'
+        - run: deno lint
 
-      - run: |
-          ARCHIVE=$(npm pack)
-          mv $ARCHIVE archive.tgz
+      fmt:
+        - uses: denoland/setup-deno@v1
+          with:
+            deno-version: vx.x.x
 
-      - uses: softprops/action-gh-release@v1
-        with:
-          files: archive.tgz
-          generate_release_notes: true
+        - run: deno fmt --check
