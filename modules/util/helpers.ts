@@ -1,6 +1,8 @@
 import { Api, TelegramClient } from "$grm";
 import { type NewMessageEvent } from "$grm/src/events/mod.ts";
 import { Entity } from "$grm/src/define.d.ts";
+import { Buffer } from "$grm/deps.ts";
+import { CustomFile } from "$grm/src/client/uploads.ts";
 import { pre } from "$xor";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
@@ -59,13 +61,14 @@ export async function sendShellOutput(
   output: string,
 ) {
   if (output.length > 4096) {
-    const file = await Deno.makeTempFile({
-      prefix: `${cmd}-`,
-      suffix: ".txt",
+    await event.message.reply({
+      file: new CustomFile(
+        `${cmd}.txt`,
+        output.length,
+        "",
+        Buffer.from(output),
+      ),
     });
-    await Deno.writeTextFile(file, output);
-    await event.message.reply({ file });
-    await Deno.remove(file);
   } else {
     await event.message.reply(pre(output, "").send);
   }
