@@ -12,7 +12,7 @@ import {
   updateMessage,
   version,
 } from "$xor";
-import { whois } from "./helpers.ts";
+import { sendShellOutput, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
 
@@ -55,8 +55,9 @@ const util: Module = {
         args = args.slice(1);
         let { text } = event.message;
         text = text.slice(text.split(/\s/)[0].length);
+        const cmd = text.trim().split(/\s/);
         const proc = Deno.run({
-          cmd: text.trim().split(/\s/),
+          cmd,
           stdout: "piped",
           stderr: "piped",
           stdin: input.length == 0 ? undefined : "piped",
@@ -71,16 +72,13 @@ const util: Module = {
         }
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
-        if (stdout.length > 0 && stdout.length <= 4096) {
-          await event.message.reply(
-            pre(stdout.trim(), "").send,
-          );
+
+        if (stdout.length > 0) {
+          sendShellOutput(event, cmd[0], stdout.trim());
+        } else if (stderr.length > 0) {
+          sendShellOutput(event, cmd[0], stderr.trim());
         }
-        if (stderr.length > 0 && stderr.length <= 4096) {
-          await event.message.reply(
-            pre(stderr.trim(), "").send,
-          );
-        }
+
         const { code } = await proc.status();
         text += "\n" + `Exited with code ${code}.`;
         await event.message.edit({ text });
