@@ -55,8 +55,9 @@ const util: Module = {
         args = args.slice(1);
         let { text } = event.message;
         text = text.slice(text.split(/\s/)[0].length);
+        const cmd = text.trim().split(/\s/);
         const proc = Deno.run({
-          cmd: text.trim().split(/\s/),
+          cmd,
           stdout: "piped",
           stderr: "piped",
           stdin: input.length == 0 ? undefined : "piped",
@@ -71,16 +72,26 @@ const util: Module = {
         }
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
-        if (stdout.length > 0 && stdout.length <= 4096) {
-          await event.message.reply(
-            pre(stdout.trim(), "").send,
-          );
+
+        let msg = "";
+        if (stdout.length > 0) {
+          msg = stdout.trim();
+        } else if (stderr.length > 0) {
+          msg = stderr.trim();
         }
-        if (stderr.length > 0 && stderr.length <= 4096) {
-          await event.message.reply(
-            pre(stderr.trim(), "").send,
-          );
+
+        if (msg.length > 4096) {
+          const file = await Deno.makeTempFile({
+            prefix: `${cmd[0]}-`,
+            suffix: ".txt",
+          });
+          await Deno.writeTextFile(file, msg);
+          await event.message.reply({ file });
+          await Deno.remove(file);
+        } else {
+          await event.message.reply(pre(msg, "").send);
         }
+
         const { code } = await proc.status();
         text += "\n" + `Exited with code ${code}.`;
         await event.message.edit({ text });
