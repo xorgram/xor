@@ -1,13 +1,11 @@
 import { Api, VERSION as telegramVersion } from "$grm";
-import { CustomFile } from "$grm/src/client/uploads.ts";
-import { bigInt, Buffer } from "$grm/deps.ts";
+import { bigInt } from "$grm/deps.ts";
 import {
   bold,
   CommandHandler,
   fmt,
   longText,
   Module,
-  pre,
   type Stringable,
   toFileUrl,
   updateMessage,
@@ -171,16 +169,9 @@ V8 ${Deno.version.v8}`,
       if (result.startsWith('"')) {
         result = result.replace(/"/g, "");
       }
-      if (result.length <= 4096) {
-        await event.message.reply(
-          pre(result, "").send,
-        );
-      } else {
-        const buffer = Buffer.from(result);
-        await event.message.reply({
-          file: new CustomFile("result.txt", buffer.length, "", buffer),
-        });
-      }
+      await event.message.reply(
+        longText(result, "result.txt"),
+      );
     }),
   ],
   help: `
