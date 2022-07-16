@@ -24,11 +24,6 @@ manager.installMultiple(
   false,
 );
 manager.install(managerModule(manager), false);
-manager.installMultiple(
-  await ModuleManager.directory(
-    join(dirname(fromFileUrl(import.meta.url)), "externals"),
-  ),
-  true,
-);
+manager.installMultiple(await ModuleManager.directory("externals"), true);
 client.addEventHandler(manager.handler, new events.NewMessage({}));
 client.start({ botAuthToken: "" });
