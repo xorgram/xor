@@ -1,5 +1,4 @@
-import { Api, TelegramClient } from "$grm";
-import { Entity } from "$grm/src/define.d.ts";
+import { Api, Entity, TelegramClient } from "$grm";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 

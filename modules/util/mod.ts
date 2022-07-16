@@ -16,12 +16,12 @@ import { whois } from "./helpers.ts";
 const LOAD_TIME = Date.now();
 
 const EVAL_HEADER =
-  `import { Api, type events, type TelegramClient } from "$grm";
+  `import { Api, type NewMessageEvent, type TelegramClient } from "$grm";
 import { Methods } from "$xor";
 
 interface EvalParams {
   client: TelegramClient;
-  event: events.NewMessageEvent;
+  event: NewMessageEvent;
 }
 
 export async function eval_({ client, event }: EvalParams): Promise<any> {

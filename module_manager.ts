@@ -1,4 +1,4 @@
-import { Api, events, TelegramClient } from "$grm";
+import { Api, NewMessageEvent, TelegramClient } from "$grm";
 import { join } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
@@ -187,7 +187,7 @@ export class ModuleManager {
     public disabled = new Set<string>(),
   ) {}
 
-  handler = async (event: events.NewMessageEvent) => {
+  handler = async (event: NewMessageEvent) => {
     for (const [, [{ name, handlers }, disableable]] of this.modules) {
       if (disableable && this.disabled.has(name)) {
         return;

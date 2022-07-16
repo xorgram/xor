@@ -1,12 +1,10 @@
 // This file will include helpers for all modules (built-in and externals).
-import { events } from "$grm";
+import { CustomFile, NewMessageEvent, SendMessageParams } from "$grm";
 import { Buffer } from "$grm/deps.ts";
-import { type SendMessageParams } from "$grm/src/client/messages.ts";
-import { CustomFile } from "$grm/src/client/uploads.ts";
 import { fmt, pre, type Stringable } from "./deps.ts";
 
 export async function wrap(
-  event: events.NewMessageEvent,
+  event: NewMessageEvent,
   func: () => Promise<void>,
 ) {
   try {
@@ -24,7 +22,7 @@ export async function wrap(
 }
 
 export async function updateMessage(
-  event: events.NewMessageEvent,
+  event: NewMessageEvent,
   text: Stringable,
 ) {
   return await event.message.edit(

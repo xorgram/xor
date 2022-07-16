@@ -1,4 +1,4 @@
-import { events, StringSession, TelegramClient } from "$grm";
+import { events, NewMessage, StringSession, TelegramClient } from "$grm";
 import { dirname, fromFileUrl, join } from "./deps.ts";
 import env from "./env.ts";
 import { managerModule, ModuleManager } from "./module_manager.ts";
@@ -24,5 +24,5 @@ manager.installMultiple(
 );
 manager.install(managerModule(manager), false);
 manager.installMultiple(await ModuleManager.directory("externals"), true);
-client.addEventHandler(manager.handler, new events.NewMessage({}));
+client.addEventHandler(manager.handler, new NewMessage({}));
 client.start();
