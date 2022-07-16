@@ -73,12 +73,12 @@ const util: Module = {
         const stderr = decoder.decode(await proc.stderrOutput());
         if (stdout.length > 0) {
           await event.message.reply(
-            longText(stdout, "stdout"),
+            longText(stdout, "stdout.txt"),
           );
         }
         if (stderr.length > 0) {
           await event.message.reply(
-            longText(stderr, "stderr"),
+            longText(stderr, "stderr.txt"),
           );
         }
         const { code } = await proc.status();
