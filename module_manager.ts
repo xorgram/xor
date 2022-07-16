@@ -247,6 +247,9 @@ export class ModuleManager {
   }
 
   static async file(spec: string) {
+    if (Deno.build.os === "windows") {
+      spec = "file://" + spec;
+    }
     const mod = (await import(spec)).default;
     if (!isModule(mod)) {
       throw new Error("Invalid module");
