@@ -1,7 +1,7 @@
 import { Api } from "$grm";
 import { CustomFile } from "$grm/src/client/uploads.ts";
 import { Buffer } from "$grm/deps.ts";
-import { CommandHandler, join, Module, updateMessage } from "$xor";
+import { code, CommandHandler, fmt, join, Module, updateMessage } from "$xor";
 import { parseAttributes } from "./helpers.ts";
 
 const files: Module = {
@@ -55,8 +55,7 @@ const files: Module = {
         );
         await updateMessage(
           event,
-          "Downloaded to <code>./downloads/" + filename + "</code>.",
-          "html",
+          fmt`Downloaded to ${code(`./downloads/${filename}`)}.`,
         );
       },
       { aliases: ["dl"] },
@@ -76,8 +75,7 @@ const files: Module = {
         } catch (e) {
           await updateMessage(
             event,
-            `File not found or access denied (<code>${e}</code>).`,
-            "html",
+            `${e}: File not found or permission denied`,
           );
           return;
         }
@@ -133,11 +131,12 @@ const files: Module = {
       async ({ event }) => {
         const files = [...Deno.readDirSync(join(Deno.cwd(), "downloads"))].map(
           (v) => v.name,
-        );
+        ).map((v) => code(v));
         await updateMessage(
           event,
-          files.map((file) => `\n- <code>${file}</code>`).join(""),
-          "html",
+          files.length == 0
+            ? "Downloads are empty."
+            : fmt([""].concat(files.map(() => "")), ...files),
         );
       },
       {
