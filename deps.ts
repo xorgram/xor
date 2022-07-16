@@ -7,4 +7,4 @@ export {
   join,
   toFileUrl,
 } from "https://deno.land/std@0.148.0/path/mod.ts";
-export * from "https://ghc.deno.dev/roj1512/grm_parse@main/mod.ts";
+export * from "https://deno.land/x/grm_parse@0.0.0/mod.ts";
