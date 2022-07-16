@@ -21,8 +21,9 @@ jobs:
 
   fmt:
     runs-on: ubuntu-latest
-    - uses: denoland/setup-deno@v1
-      with:
-        deno-version: vx.x.x
+    steps:
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
 
-    - run: deno fmt --check
+      - run: deno fmt --check
