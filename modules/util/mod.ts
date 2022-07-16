@@ -12,7 +12,7 @@ import {
   updateMessage,
   version,
 } from "$xor";
-import { whois } from "./helpers.ts";
+import { sendShellOutput, whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
 
@@ -73,23 +73,10 @@ const util: Module = {
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
 
-        let msg = "";
         if (stdout.length > 0) {
-          msg = stdout.trim();
+          sendShellOutput(event, cmd[0], stdout.trim());
         } else if (stderr.length > 0) {
-          msg = stderr.trim();
-        }
-
-        if (msg.length > 4096) {
-          const file = await Deno.makeTempFile({
-            prefix: `${cmd[0]}-`,
-            suffix: ".txt",
-          });
-          await Deno.writeTextFile(file, msg);
-          await event.message.reply({ file });
-          await Deno.remove(file);
-        } else {
-          await event.message.reply(pre(msg, "").send);
+          sendShellOutput(event, cmd[0], stderr.trim());
         }
 
         const { code } = await proc.status();

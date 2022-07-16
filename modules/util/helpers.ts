@@ -1,5 +1,7 @@
 import { Api, TelegramClient } from "$grm";
+import { type NewMessageEvent } from "$grm/src/events/mod.ts";
 import { Entity } from "$grm/src/define.d.ts";
+import { pre } from "$xor";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 
@@ -49,4 +51,22 @@ export async function whois(
     whois += "Could not resolve whois";
   }
   return whois;
+}
+
+export async function sendShellOutput(
+  event: NewMessageEvent,
+  cmd: string,
+  output: string,
+) {
+  if (output.length > 4096) {
+    const file = await Deno.makeTempFile({
+      prefix: `${cmd}-`,
+      suffix: ".txt",
+    });
+    await Deno.writeTextFile(file, output);
+    await event.message.reply({ file });
+    await Deno.remove(file);
+  } else {
+    await event.message.reply(pre(output, "").send);
+  }
 }
