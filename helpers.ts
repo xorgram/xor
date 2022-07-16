@@ -37,12 +37,14 @@ export function longText(
   text: string,
   name?: string,
 ): SendMessageParams {
-  return text.length > 4096 ? pre(text.trim(), "").send : {
-    file: new CustomFile(
-      name ?? crypto.randomUUID(),
-      text.length,
-      "",
-      Buffer.from(text),
-    ),
-  };
+  return text.length > 4096
+    ? {
+      file: new CustomFile(
+        name ?? crypto.randomUUID(),
+        text.length,
+        "",
+        Buffer.from(text),
+      ),
+    }
+    : pre(text.trim(), "").send;
 }
