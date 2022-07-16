@@ -1,9 +1,5 @@
 import { Api, TelegramClient } from "$grm";
-import { type NewMessageEvent } from "$grm/src/events/mod.ts";
 import { Entity } from "$grm/src/define.d.ts";
-import { Buffer } from "$grm/deps.ts";
-import { CustomFile } from "$grm/src/client/uploads.ts";
-import { pre } from "$xor";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 
@@ -53,23 +49,4 @@ export async function whois(
     whois += "Could not resolve whois";
   }
   return whois;
-}
-
-export async function sendShellOutput(
-  event: NewMessageEvent,
-  cmd: string,
-  output: string,
-) {
-  if (output.length > 4096) {
-    await event.message.reply({
-      file: new CustomFile(
-        `${cmd}.txt`,
-        output.length,
-        "",
-        Buffer.from(output),
-      ),
-    });
-  } else {
-    await event.message.reply(pre(output, "").send);
-  }
 }

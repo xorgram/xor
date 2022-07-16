@@ -5,6 +5,7 @@ import {
   bold,
   CommandHandler,
   fmt,
+  longText,
   Module,
   pre,
   type Stringable,
@@ -12,7 +13,7 @@ import {
   updateMessage,
   version,
 } from "$xor";
-import { sendShellOutput, whois } from "./helpers.ts";
+import { whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
 
@@ -72,13 +73,16 @@ const util: Module = {
         }
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
-
         if (stdout.length > 0) {
-          sendShellOutput(event, cmd[0], stdout.trim());
-        } else if (stderr.length > 0) {
-          sendShellOutput(event, cmd[0], stderr.trim());
+          await event.message.reply(
+            longText(stdout, `${cmd[0]}-stdout`),
+          );
         }
-
+        if (stderr.length > 0) {
+          await event.message.reply(
+            longText(stderr, `${cmd[0]}-stderr`),
+          );
+        }
         const { code } = await proc.status();
         text += "\n" + `Exited with code ${code}.`;
         await event.message.edit({ text });
