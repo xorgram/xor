@@ -1,6 +1,6 @@
 import { Api } from "$grm";
-import { CustomFile } from "$grm/src/client/uploads.ts";
 import { Buffer } from "$grm/deps.ts";
+import { CustomFile } from "$grm/src/client/uploads.ts";
 import { code, CommandHandler, fmt, join, Module, updateMessage } from "$xor";
 import { parseAttributes } from "./helpers.ts";
 

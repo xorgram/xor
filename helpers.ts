@@ -1,10 +1,9 @@
-// This file will include dependencies and helpers for all modules (built-in and externals).
+// This file will include helpers for all modules (built-in and externals).
 import { events } from "$grm";
 import { Buffer } from "$grm/deps.ts";
 import { type SendMessageParams } from "$grm/src/client/messages.ts";
 import { CustomFile } from "$grm/src/client/uploads.ts";
-import { pre } from "$xor";
-import { fmt, Stringable } from "./deps.ts";
+import { fmt, pre, type Stringable } from "./deps.ts";
 
 export async function wrap(
   event: events.NewMessageEvent,

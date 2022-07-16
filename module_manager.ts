@@ -1,5 +1,4 @@
 import { Api, events, TelegramClient } from "$grm";
-
 import { join } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
