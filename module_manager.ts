@@ -1,6 +1,6 @@
 import { Api, events, TelegramClient } from "$grm";
 
-import { dirname, fromFileUrl, join } from "./deps.ts";
+import { dirname, fromFileUrl, join, toFileUrl } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -247,9 +247,7 @@ export class ModuleManager {
   }
 
   static async file(spec: string) {
-    if (Deno.build.os === "windows") {
-      spec = "file://" + spec;
-    }
+    spec = toFileUrl(spec).href;
     const mod = (await import(spec)).default;
     if (!isModule(mod)) {
       throw new Error("Invalid module");
