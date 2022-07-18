@@ -1,8 +1,8 @@
-import { Api, errors, events, TelegramClient } from "$grm";
+import { Api, errors, NewMessageEvent, TelegramClient } from "$grm";
 import { updateMessage } from "../../helpers.ts";
 
 export const getUser = async (
-  event: events.NewMessageEvent,
+  event: NewMessageEvent,
   client: TelegramClient,
   args: string[],
   getRank = false,
@@ -73,7 +73,7 @@ export const expectedErrors: { [key: string]: string } = {
 };
 
 export async function wrapRpcErrors(
-  event: events.NewMessageEvent,
+  event: NewMessageEvent,
   func: () => Promise<void> | void,
 ) {
   try {

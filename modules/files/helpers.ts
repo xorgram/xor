@@ -2,7 +2,7 @@ import { Api } from "$grm";
 
 type Nullable<T> = T | null;
 
-export const parseAttributes = (attrs: Api.TypeDocumentAttribute[]) => {
+export function parseAttributes(attrs: Api.TypeDocumentAttribute[]) {
   let attrAnimated: Nullable<Api.DocumentAttributeAnimated> = null;
   let attrAudio: Nullable<Api.DocumentAttributeAudio> = null;
   let attrFilename: Nullable<Api.DocumentAttributeFilename> = null;
@@ -49,4 +49,4 @@ export const parseAttributes = (attrs: Api.TypeDocumentAttribute[]) => {
     attrSticker,
     attrVideo,
   };
-};
+}

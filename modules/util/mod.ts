@@ -1,12 +1,11 @@
 import { Api, VERSION as telegramVersion } from "$grm";
-import { CustomFile } from "$grm/src/client/uploads.ts";
-import { bigInt, Buffer } from "$grm/deps.ts";
+import { bigInt } from "$grm/deps.ts";
 import {
   bold,
   CommandHandler,
   fmt,
+  longText,
   Module,
-  pre,
   type Stringable,
   toFileUrl,
   updateMessage,
@@ -17,12 +16,12 @@ import { whois } from "./helpers.ts";
 const LOAD_TIME = Date.now();
 
 const EVAL_HEADER =
-  `import { Api, type events, type TelegramClient } from "$grm";
+  `import { Api, type NewMessageEvent, type TelegramClient } from "$grm";
 import { Methods } from "$xor";
 
 interface EvalParams {
   client: TelegramClient;
-  event: events.NewMessageEvent;
+  event: NewMessageEvent;
 }
 
 export async function eval_({ client, event }: EvalParams): Promise<any> {
@@ -55,8 +54,9 @@ const util: Module = {
         args = args.slice(1);
         let { text } = event.message;
         text = text.slice(text.split(/\s/)[0].length);
+        const cmd = text.trim().split(/\s/);
         const proc = Deno.run({
-          cmd: text.trim().split(/\s/),
+          cmd,
           stdout: "piped",
           stderr: "piped",
           stdin: input.length == 0 ? undefined : "piped",
@@ -71,14 +71,14 @@ const util: Module = {
         }
         const stdout = decoder.decode(await proc.output());
         const stderr = decoder.decode(await proc.stderrOutput());
-        if (stdout.length > 0 && stdout.length <= 4096) {
+        if (stdout.length > 0) {
           await event.message.reply(
-            pre(stdout.trim(), "").send,
+            longText(stdout, "stdout.txt"),
           );
         }
-        if (stderr.length > 0 && stderr.length <= 4096) {
+        if (stderr.length > 0) {
           await event.message.reply(
-            pre(stderr.trim(), "").send,
+            longText(stderr, "stderr.txt"),
           );
         }
         const { code } = await proc.status();
@@ -169,16 +169,9 @@ V8 ${Deno.version.v8}`,
       if (result.startsWith('"')) {
         result = result.replace(/"/g, "");
       }
-      if (result.length <= 4096) {
-        await event.message.reply(
-          pre`${result}`.send,
-        );
-      } else {
-        const buffer = Buffer.from(result);
-        await event.message.reply({
-          file: new CustomFile("result.txt", buffer.length, "", buffer),
-        });
-      }
+      await event.message.reply(
+        longText(result, "result.txt"),
+      );
     }),
   ],
   help: `

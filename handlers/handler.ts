@@ -1,8 +1,8 @@
-import { events, TelegramClient } from "$grm";
+import { NewMessageEvent, TelegramClient } from "$grm";
 
 export interface HandlerFuncParams {
   client: TelegramClient;
-  event: events.NewMessageEvent;
+  event: NewMessageEvent;
 }
 
 export abstract class Handler {

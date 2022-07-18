@@ -1,14 +1,10 @@
-import { Api, events, TelegramClient } from "$grm";
-
-import { dirname, fromFileUrl, join, toFileUrl } from "./deps.ts";
+import { Api, NewMessageEvent, TelegramClient } from "$grm";
+import { join, toFileUrl } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
 
-const externals = join(
-  dirname(fromFileUrl(import.meta.url)),
-  "externals",
-);
+const externals = "externals";
 
 export function managerModule(manager: ModuleManager): Module {
   return {
@@ -191,7 +187,7 @@ export class ModuleManager {
     public disabled = new Set<string>(),
   ) {}
 
-  handler = async (event: events.NewMessageEvent) => {
+  handler = async (event: NewMessageEvent) => {
     for (const [, [{ name, handlers }, disableable]] of this.modules) {
       if (disableable && this.disabled.has(name)) {
         return;
