@@ -248,7 +248,7 @@ export class ModuleManager {
     if (!isModule(mod)) {
       throw new Error("Invalid module");
     }
-    return mod as Module;
+    return mod;
   }
 
   static async directory(path: string) {
