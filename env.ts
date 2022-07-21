@@ -1,6 +1,6 @@
 import { cleanEnv, config, num, str } from "./deps.ts";
 
-config({ export: true });
+await config({ export: true });
 
 export default cleanEnv(Deno.env.toObject(), {
   STRING_SESSION: str(),
