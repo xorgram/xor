@@ -11,29 +11,46 @@ export function managerModule(manager: ModuleManager): Module {
     name: "manager",
     handlers: [
       new CommandHandler("install", async ({ client, event }) => {
+        let result: string | undefined;
         const reply = await event.message.getReplyMessage();
-        if (!reply) {
-          return;
+        if (reply) {
+          const { media } = reply;
+          if (
+            (media instanceof Api.MessageMediaDocument) &&
+            (media.document instanceof Api.Document) &&
+            media.document.mimeType != "text/vnd.trolltech.linguist" &&
+            media.document.size.gt(5000)
+          ) {
+            result = (await client.downloadMedia(media, {}))?.toString();
+          }
+        } else {
+          try {
+            const arg = event.message.text.split(/\s/)[1];
+            // deno-lint-ignore no-control-regex
+            if (/^[\x00-\x7F]*$/.test(arg)) {
+              const url = new URL(arg);
+              if (url.protocol == "https:" && url.pathname.endsWith(".ts")) {
+                const res = await fetch(url);
+                const contentType = res.headers.get("content-type");
+                if (
+                  contentType && contentType.includes("application/typescript")
+                ) {
+                  result = await res.text();
+                }
+              }
+            }
+          } catch (err) {
+            if (!(err instanceof TypeError)) {
+              throw err;
+            }
+          }
         }
-        const { media } = reply;
-        if (
-          !(media instanceof Api.MessageMediaDocument) ||
-          !(media.document instanceof Api.Document) ||
-          media.document.mimeType != "text/vnd.trolltech.linguist" ||
-          media.document.size.gt(5000)
-        ) {
-          return;
-        }
-        const result = await client.downloadMedia(media, {});
-        if (!result) {
+        if (result == undefined) {
           await updateMessage(event, "Could not download the module.");
           return;
         }
-        const spec = join(externals, `.${media.document.id}.ts`);
-        await Deno.writeTextFile(
-          spec,
-          typeof result === "string" ? result : result.toString(),
-        );
+        const spec = join(externals, `.${crypto.randomUUID()}.ts`);
+        await Deno.writeTextFile(spec, result);
         let module;
         try {
           module = await ModuleManager.file(spec);
