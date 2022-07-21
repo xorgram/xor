@@ -124,7 +124,7 @@ export function managerModule(manager: ModuleManager): Module {
             message += module + "\n";
           }
         }
-        await event.message.reply({ message });
+        await event.message.reply({ message, parseMode: "markdown" });
       }),
       new CommandHandler("help", async ({ event, args }) => {
         const name = args[0];
@@ -142,7 +142,7 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "This module has no help.");
           return;
         }
-        await event.message.reply({ message });
+        await event.message.reply({ message, parseMode: "markdown" });
       }),
     ],
     help: `
