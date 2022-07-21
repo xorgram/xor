@@ -1,9 +1,9 @@
-import { Api, Entity, TelegramClient } from "$grm";
+import { Api, TelegramClient } from "$grm";
 
 const kv = (k: string, v: unknown) => `${k}: ${String(v)}\n`;
 
 export async function whois(
-  entity: Entity,
+  entity: Api.TypeEntity,
   client: TelegramClient,
 ) {
   let whois = "";
