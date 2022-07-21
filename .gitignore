@@ -1,5 +1,4 @@
 .env
-dist/
 externals/
-node_modules/
 downloads/
+test*
