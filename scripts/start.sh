@@ -1,11 +1,2 @@
-ARCHIVE_NAME=archive.tgz
-
-wget https://github.com/xorgram/xor/releases/latest/download/$ARCHIVE_NAME -O $ARCHIVE_NAME
-tar xf $ARCHIVE_NAME
-rm $ARCHIVE_NAME
-rm -rf dist
-mv package/* .
-rmdir package
-
-npm i --production --ignore-scripts
-npm start
+BASE_URL=https://raw.githubusercontent.com/xorgram/xor/$(deno eval "await Deno.stdout.write(new TextEncoder().encode((await (await fetch(\"https://api.github.com/repos/xorgram/xor/tags\")).json())[0].name))")
+deno run --allow-env --allow-net --allow-read --allow-run --allow-write --import-map=$BASE_URL/import_map.json -r $BASE_URL/main.ts
