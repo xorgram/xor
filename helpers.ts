@@ -1,6 +1,6 @@
 // This file will include helpers for all modules (built-in and externals).
 import { CustomFile, NewMessageEvent, SendMessageParams } from "$grm";
-import { Buffer } from "$grm/deps.ts";
+import { Buffer } from "$grm-deps";
 import { fmt, pre, type Stringable } from "./deps.ts";
 
 export async function wrap(

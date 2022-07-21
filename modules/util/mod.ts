@@ -1,5 +1,5 @@
 import { Api, VERSION as telegramVersion } from "$grm";
-import { bigInt } from "$grm/deps.ts";
+import { bigInt } from "$grm-deps";
 import {
   bold,
   CommandHandler,

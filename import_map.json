@@ -1,7 +1,7 @@
 {
   "imports": {
     "$grm": "https://deno.land/x/grm@v0.2.3/mod.ts",
-    "$grm/": "https://deno.land/x/grm@v0.2.3/",
+    "$grm-deps": "https://deno.land/x/grm@v0.2.3/deps.ts",
     "$xor": "./xor.ts"
   }
 }
