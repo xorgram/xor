@@ -195,7 +195,7 @@ Displays the uptime of the bot in (hh:)mm:ss format.
 
 - version, v
 
-Displays the versions of Xor, GramJS and Node.
+Displays the versions of Xor and other software.
 
 - whois
 
