@@ -1,5 +1,5 @@
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
-import { join, toFileUrl } from "./deps.ts";
+import { join, resolve, toFileUrl } from "./deps.ts";
 import { CommandHandler } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -243,7 +243,7 @@ export class ModuleManager {
   }
 
   static async file(spec: string) {
-    spec = toFileUrl(spec).href;
+    spec = toFileUrl(resolve(spec)).href;
     const mod = (await import(spec)).default;
     if (!isModule(mod)) {
       throw new Error("Invalid module");
