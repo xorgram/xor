@@ -19,7 +19,9 @@ export function managerModule(manager: ModuleManager): Module {
         if (
           !(media instanceof Api.MessageMediaDocument) ||
           !(media.document instanceof Api.Document) ||
-          media.document.mimeType != "text/vnd.trolltech.linguist" ||
+          !(media.document.attributes[0] instanceof
+            Api.DocumentAttributeFilename) ||
+          !media.document.attributes[0].fileName.endsWith(".ts") ||
           media.document.size.gt(5000)
         ) {
           return;
