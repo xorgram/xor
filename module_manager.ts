@@ -76,7 +76,10 @@ export function managerModule(manager: ModuleManager): Module {
         }
         let disabled = 0;
         for (const arg of args) {
-          if (!manager.disabled.has(arg)) {
+          const module = manager.modules.get(arg);
+          if (
+            module && module[1] && !manager.disabled.has(arg)
+          ) {
             manager.disabled.add(arg);
             disabled++;
           }
