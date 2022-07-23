@@ -143,8 +143,7 @@ const files: Module = {
       },
     ),
   ],
-  help: `
-**Introduction**
+  help: `**Introduction**
 
 The files module can be used for operations like file download, upload, listing and more.
 
@@ -164,8 +163,7 @@ Re-uploads the replied file to Telegram with a new name.
 
 - listdl, lsdl
 
-Lists the downloaded files.
-`,
+Lists the downloaded files.`,
 };
 
 export default files;

@@ -163,8 +163,7 @@ const admin: Module = {
       });
     }),
   ],
-  help: `
-**Introduction**
+  help: `**Introduction**
 
 This module aims to make administering chats easy.
 
@@ -198,8 +197,7 @@ Pins the replied message in the chat. Pass "silent" to not notify the members.
 
 - unpin
 
-Unpins the replied pinned message.
-`,
+Unpins the replied pinned message.`,
 };
 
 export default admin;
