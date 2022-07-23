@@ -174,8 +174,7 @@ V8 ${Deno.version.v8}`,
       );
     }),
   ],
-  help: `
-**Introduction**
+  help: `**Introduction**
 
 The util module includes some useful commands to interact with the system and get basic information of the surrounding.
 
@@ -203,9 +202,7 @@ Fetches and displays basic information about the current chat, the provided iden
 
 - eval
 
-Runs and sends the output of JavaScript code. As of now, it passes the GramJS client as \`client | c\`, the \`NewMessageEvent\` as \`event | e\`, the message as \`message | m\`, the replied message as \`reply | r\`, xorgram-methods instance as \`methods\` and the GramJS API namespace as \`Api\`.
-
-`,
+Runs and sends the output of JavaScript code. As of now, it passes the client as \`client | c\`, the \`NewMessageEvent\` as \`event | e\`, the message as \`message | m\`, the replied message as \`reply | r\`, xorgram-methods instance as \`methods\` and the API namespace as \`Api\`.`,
 };
 
 export default util;
