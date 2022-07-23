@@ -46,11 +46,11 @@ const files: Module = {
         }
         const spec = join("downloads", filename);
         await Deno.mkdir(join("downloads"), { recursive: true });
-        await Deno.writeTextFile(
+        await Deno.writeFile(
           spec,
           typeof mediaBuffer === "string"
-            ? mediaBuffer
-            : mediaBuffer.toString(),
+            ? new TextEncoder().encode(mediaBuffer)
+            : mediaBuffer,
         );
         await updateMessage(
           event,
