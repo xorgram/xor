@@ -1,6 +1,6 @@
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
 import { join, resolve, toFileUrl } from "./deps.ts";
-import { CommandHandler } from "./handlers/mod.ts";
+import { CommandHandler, End } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
 
@@ -200,7 +200,10 @@ export class ModuleManager {
       for (const handler of handlers) {
         if (await handler.check({ client: this.client, event })) {
           try {
-            await handler.handle({ client: this.client, event });
+            const result = await handler.handle({ client: this.client, event });
+            if (typeof result === "symbol" && result == End) {
+              break;
+            }
           } catch (err) {
             console.error(err);
             try {
