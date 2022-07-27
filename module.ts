@@ -1,9 +1,10 @@
 import { Handler } from "./handlers/mod.ts";
+import { FormattedString } from "./deps.ts";
 
 export interface Module {
   name: string;
   handlers: Handler[];
-  help?: string;
+  help?: string | FormattedString;
 }
 
 export function isModule(value: unknown): value is Module {
@@ -17,9 +18,11 @@ export function isModule(value: unknown): value is Module {
 }
 
 export function getHelp(mod: Module) {
-  if (mod.help !== undefined) {
-    mod.help = mod.help.trim();
-    if (mod.help.length > 0 && mod.help.length <= 4096) {
+  if (typeof mod.help !== "undefined") {
+    const length = typeof mod.help === "string"
+      ? mod.help.length
+      : mod.help.text.length;
+    if (length > 0 && length <= 4096) {
       return mod.help;
     }
   }

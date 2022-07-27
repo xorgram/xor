@@ -1,5 +1,5 @@
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
-import { join, resolve, toFileUrl } from "./deps.ts";
+import { bold, fmt, join, resolve, toFileUrl } from "./deps.ts";
 import { CommandHandler, End } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -147,15 +147,17 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "This module has no help.");
           return;
         }
-        await event.message.reply({ message, parseMode: "markdown" });
+        await event.message.reply({
+          ...(typeof message === "string" ? { message } : message.send),
+          parseMode: "markdown",
+        });
       }),
     ],
-    help: `
-**Introduction**
+    help: fmt`${bold("Introduction")}
 
 The module manager lets you list the installed modules, get help for them and install external modules.
 
-**Commands**
+${bold("Commands")}
 
 - install
 
@@ -179,8 +181,7 @@ Lists the installed modules.
 
 - help
 
-Sends the help message of a module if existing.
-		`,
+Sends the help message of a module if existing.`,
   };
 }
 
