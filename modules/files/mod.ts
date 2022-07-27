@@ -1,6 +1,14 @@
 import { Api, CustomFile } from "$grm";
 import { Buffer } from "$grm-deps";
-import { code, CommandHandler, fmt, join, Module, updateMessage } from "$xor";
+import {
+  bold,
+  code,
+  CommandHandler,
+  fmt,
+  join,
+  Module,
+  updateMessage,
+} from "$xor";
 import { parseAttributes } from "./helpers.ts";
 
 const files: Module = {
@@ -143,11 +151,11 @@ const files: Module = {
       },
     ),
   ],
-  help: `**Introduction**
+  help: fmt`${bold("Introduction")}
 
 The files module can be used for operations like file download, upload, listing and more.
 
-**Commands**
+${bold("Commands")}
 
 - download, dl
 

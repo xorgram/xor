@@ -1,5 +1,13 @@
 import { Api } from "$grm";
-import { CommandHandler, Methods, Module, updateMessage } from "$xor";
+import {
+  bold,
+  CommandHandler,
+  fmt,
+  italic,
+  Methods,
+  Module,
+  updateMessage,
+} from "$xor";
 import { getUser, wrapRpcErrors } from "./helpers.ts";
 
 const admin: Module = {
@@ -163,11 +171,11 @@ const admin: Module = {
       });
     }),
   ],
-  help: `**Introduction**
+  help: fmt`${bold("Introduction")}
 
 This module aims to make administering chats easy.
 
-**Commands**
+${bold("Commands")}
 
 - promote
 
@@ -189,7 +197,11 @@ Unbans the requested user from the chat.
 
 Adds the requested user to the chat.
 
-**Note: The commands above work by replying to a user or passing their username or ID as the first argument.**
+${
+    italic(
+      "Note: The commands above work by replying to a user or passing their username or ID as the first argument.",
+    )
+  }
 
 - pin
 

@@ -174,11 +174,11 @@ V8 ${Deno.version.v8}`,
       );
     }),
   ],
-  help: `**Introduction**
+  help: fmt`${bold("Introduction")}
 
 The util module includes some useful commands to interact with the system and get basic information of the surrounding.
 
-**Commands**
+${bold("Commands")}
 
 - ping
 
