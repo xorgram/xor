@@ -189,7 +189,7 @@ Unbans the requested user from the chat.
 
 Adds the requested user to the chat.
 
-*Note: The commands above work by replying to a user or passing their ID or handle as the first argument.*
+***Note: The commands above work by replying to a user or passing their username or ID as the first argument.**
 
 - pin
 
