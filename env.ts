@@ -10,20 +10,17 @@ const cmdPrefix = makeValidator((input) => {
     return input;
   }
   console.warn(
-    "COMMAND_PREFIX falling back to '\\', single symbol expected excluding @,#,$",
+    "Falling back to '\\' for COMMAND_PREFIX, a single symbol excluding @, #, $ was expected",
   );
   return "\\";
 });
 
 const inputPrefix = makeValidator((input) => {
-  if (
-    PREFIX_REGEX.test(input) &&
-    input !== Deno.env.get("COMMAND_PREFIX")
-  ) {
+  if (PREFIX_REGEX.test(input) && input !== Deno.env.get("COMMAND_PREFIX")) {
     return input;
   }
   console.warn(
-    "INPUT_PREFIX falling back to '>', single symbol expected excluding @,#,$ and COMMAND_PREFIX",
+    "Falling back to '>' for INPUT_PREFIX, a single symbol excluding @, #, $ and COMMAND_PREFIX was expected",
   );
   return "\\";
 });
