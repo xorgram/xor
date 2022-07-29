@@ -41,6 +41,4 @@ export default cleanEnv(Deno.env.toObject(), {
   APP_HASH: str(),
   COMMAND_PREFIX: cmdPrefix({ default: "\\" }),
   INPUT_PREFIX: inputPrefix({ default: ">" }),
-  // deno-lint-ignore no-explicit-any
-  LOG_LEVEL: makeValidator((input) => getLevelByName(input as any))(),
 });
