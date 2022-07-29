@@ -1,5 +1,5 @@
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
-import { bold, fmt, join, resolve, toFileUrl } from "./deps.ts";
+import { bold, fmt, join, log, resolve, toFileUrl } from "./deps.ts";
 import { CommandHandler, End } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -198,7 +198,7 @@ export class ModuleManager {
       if (disableable && this.disabled.has(name)) {
         return;
       }
-      for (const handler of handlers) {
+      for (const [index, handler] of Object.entries(handlers)) {
         if (await handler.check({ client: this.client, event })) {
           try {
             const result = await handler.handle({ client: this.client, event });
@@ -206,7 +206,7 @@ export class ModuleManager {
               break;
             }
           } catch (err) {
-            console.error(err);
+            log.error(`handler #${index} of ${name} failed: ${err}`);
             try {
               let message = String(err);
               message = message.length <= 1000 ? message : "An error occurred.";
@@ -262,15 +262,24 @@ export class ModuleManager {
 
   static async directory(path: string) {
     const modules = new Array<Module>();
-    for await (let { name: file } of Deno.readDir(path)) {
-      if (file.startsWith(".")) {
+    let all = 0;
+    let loaded = 0;
+    for await (let { name, isFile, isDirectory } of Deno.readDir(path)) {
+      if ((!isFile && !isDirectory) || name.startsWith(".")) {
         continue;
       }
-      file = file.endsWith(".ts") ? file : `${file}/mod.ts`;
-      const spec = join(path, file);
-      const mod = await this.file(spec);
-      modules.push(mod);
+      all++;
+      name = name.endsWith(".ts") ? name : `${name}/mod.ts`;
+      const spec = join(path, name);
+      try {
+        const mod = await this.file(spec);
+        modules.push(mod);
+        loaded++;
+      } catch (err) {
+        log.warning(`failed to load ${spec} from ${path}: ${err}`);
+      }
     }
+    log.info(`loaded ${loaded} out of ${all} modules from ${path}`);
     return modules;
   }
 }
