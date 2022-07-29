@@ -1,4 +1,4 @@
-import { cleanEnv, config, makeValidator, num, str } from "./deps.ts";
+import { cleanEnv, config, log, makeValidator, num, str } from "./deps.ts";
 
 await config({ export: true });
 
@@ -9,9 +9,10 @@ const cmdPrefix = makeValidator((input) => {
   if (PREFIX_REGEX.test(input)) {
     return input;
   }
-  console.warn(
-    "Falling back to '\\' for COMMAND_PREFIX, a single symbol excluding @, #, $ was expected",
+  log.warning(
+    "falling back to '\\' for COMMAND_PREFIX: a single symbol excluding @, # and $ was expected",
   );
+  Deno.exit();
   return "\\";
 });
 
@@ -19,8 +20,8 @@ const inputPrefix = makeValidator((input) => {
   if (PREFIX_REGEX.test(input) && input !== Deno.env.get("COMMAND_PREFIX")) {
     return input;
   }
-  console.warn(
-    "Falling back to '>' for INPUT_PREFIX, a single symbol excluding @, #, $ and COMMAND_PREFIX was expected",
+  log.warning(
+    "falling back to '>' for INPUT_PREFIX: a single symbol excluding @, #, $ and COMMAND_PREFIX was expected",
   );
   return "\\";
 });
