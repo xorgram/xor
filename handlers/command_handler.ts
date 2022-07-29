@@ -1,5 +1,6 @@
 import { HandlerFuncParams } from "./handler.ts";
 import { MessageHandler } from "./message_handler.ts";
+import env from "../env.ts";
 
 export interface CommandHandlerFuncParams {
   args: string[];
@@ -37,7 +38,7 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
       return false;
     }
     const { text } = event.message;
-    if (!["\\", ">"].includes(text[0])) {
+    if (![env.COMMAND_PREFIX, env.INPUT_PREFIX].includes(text[0])) {
       return false;
     }
     const command = text.split(/\s/)[0].slice(1);
@@ -54,14 +55,14 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
     const inputType = message[0];
     const reply = await event.message.getReplyMessage();
     switch (inputType) {
-      case "\\":
+      case env.COMMAND_PREFIX:
         input = (this.opts?.rawInput ? message : text)
           .split("\n")
           .slice(1)
           .join("\n")
           .trim();
         break;
-      case ">":
+      case env.INPUT_PREFIX:
         if (reply && reply.text) {
           input = this.opts?.rawInput ? reply.message : reply.text;
         }
