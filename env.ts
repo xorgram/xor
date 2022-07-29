@@ -18,7 +18,7 @@ const cmdPrefix = makeValidator((input) => {
 const inputPrefix = makeValidator((input) => {
   if (
     PREFIX_REGEX.test(input) &&
-    input !== Deno.env.toObject().COMMAND_PREFIX
+    input !== Deno.env.get("COMMAND_PREFIX")
   ) {
     return input;
   }
