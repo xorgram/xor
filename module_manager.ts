@@ -262,15 +262,24 @@ export class ModuleManager {
 
   static async directory(path: string) {
     const modules = new Array<Module>();
-    for await (let { name: file } of Deno.readDir(path)) {
-      if (file.startsWith(".")) {
+    let all = 0;
+    let loaded = 0;
+    for await (let { name, isFile, isDirectory } of Deno.readDir(path)) {
+      if ((!isFile && !isDirectory) || name.startsWith(".")) {
         continue;
       }
-      file = file.endsWith(".ts") ? file : `${file}/mod.ts`;
-      const spec = join(path, file);
-      const mod = await this.file(spec);
-      modules.push(mod);
+      all++;
+      name = name.endsWith(".ts") ? name : `${name}/mod.ts`;
+      const spec = join(path, name);
+      try {
+        const mod = await this.file(spec);
+        modules.push(mod);
+        loaded++;
+      } catch (err) {
+        log.warning(`failed to load ${spec} from ${path}: ${err}`);
+      }
     }
+    log.info(`loaded ${loaded} out of ${all} modules from ${path}`);
     return modules;
   }
 }
