@@ -23,7 +23,7 @@ const inputPrefix = makeValidator((input) => {
     return input;
   }
   console.warn(
-    "INPUT_PREFIX falling back to '>', single symbol expected excluding @,#,$ & COMMAND_PREFIX",
+    "INPUT_PREFIX falling back to '>', single symbol expected excluding @,#,$ and COMMAND_PREFIX",
   );
   return "\\";
 });
