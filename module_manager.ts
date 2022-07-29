@@ -1,5 +1,5 @@
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
-import { bold, fmt, join, resolve, toFileUrl } from "./deps.ts";
+import { bold, fmt, join, log, resolve, toFileUrl } from "./deps.ts";
 import { CommandHandler, End } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
@@ -198,7 +198,7 @@ export class ModuleManager {
       if (disableable && this.disabled.has(name)) {
         return;
       }
-      for (const handler of handlers) {
+      for (const [index, handler] of Object.entries(handlers)) {
         if (await handler.check({ client: this.client, event })) {
           try {
             const result = await handler.handle({ client: this.client, event });
@@ -206,7 +206,7 @@ export class ModuleManager {
               break;
             }
           } catch (err) {
-            console.error(err);
+            log.error(`handler #${index} of ${name} failed: ${err}`);
             try {
               let message = String(err);
               message = message.length <= 1000 ? message : "An error occurred.";
