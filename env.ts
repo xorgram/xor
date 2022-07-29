@@ -1,12 +1,4 @@
-import {
-  cleanEnv,
-  config,
-  getLevelByName,
-  log,
-  makeValidator,
-  num,
-  str,
-} from "./deps.ts";
+import { cleanEnv, config, log, makeValidator, num, str } from "./deps.ts";
 
 await config({ export: true });
 
@@ -14,7 +6,6 @@ await config({ export: true });
 const PREFIX_REGEX = /^[^\p{L}\d\s@#\$]$/u;
 
 const cmdPrefix = makeValidator((input) => {
-  console.log(input, PREFIX_REGEX.test(input));
   if (PREFIX_REGEX.test(input)) {
     return input;
   }
