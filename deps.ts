@@ -2,9 +2,9 @@
 export { config } from "https://deno.land/std@0.149.0/dotenv/mod.ts";
 export {
   cleanEnv,
+  makeValidator,
   num,
   str,
-  makeValidator,
 } from "https://deno.land/x/envalid@v0.0.3/mod.ts";
 export {
   dirname,

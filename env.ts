@@ -1,4 +1,4 @@
-import { cleanEnv, config, num, str, makeValidator } from "./deps.ts";
+import { cleanEnv, config, makeValidator, num, str } from "./deps.ts";
 
 await config({ export: true });
 
@@ -10,7 +10,7 @@ const cmdPrefix = makeValidator((input) => {
     return input;
   }
   console.warn(
-    "COMMAND_PREFIX falling back to '\\', single symbol expected excluding @,#,$"
+    "COMMAND_PREFIX falling back to '\\', single symbol expected excluding @,#,$",
   );
   return "\\";
 });
@@ -23,7 +23,7 @@ const inputPrefix = makeValidator((input) => {
     return input;
   }
   console.warn(
-    "INPUT_PREFIX falling back to '>', single symbol expected excluding @,#,$ & COMMAND_PREFIX"
+    "INPUT_PREFIX falling back to '>', single symbol expected excluding @,#,$ & COMMAND_PREFIX",
   );
   return "\\";
 });

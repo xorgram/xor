@@ -26,7 +26,7 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
   constructor(
     public name: string,
     public func: CommandHandlerFunc<CommandHandlerFuncParams>,
-    opts?: CommandHandlerOpts
+    opts?: CommandHandlerOpts,
   ) {
     super(func);
     this.opts = opts ?? {};
