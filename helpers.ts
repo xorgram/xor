@@ -3,11 +3,11 @@ import { CustomFile, NewMessageEvent, SendMessageParams } from "$grm";
 import { Buffer } from "$grm-deps";
 import { fmt, pre, type Stringable } from "./deps.ts";
 
-export async function updateMessage(
+export function updateMessage(
   event: NewMessageEvent,
   text: Stringable,
 ) {
-  return await event.message.edit(
+  return event.message.edit(
     fmt`${event.message.text}\n${text}`.edit,
   );
 }
