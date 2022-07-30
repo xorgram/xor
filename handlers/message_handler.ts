@@ -1,4 +1,4 @@
-import { Handler, HandlerFuncParams,HandleFuncResult } from "./handler.ts";
+import { HandleFuncResult, Handler, HandlerFuncParams } from "./handler.ts";
 
 // deno-lint-ignore ban-types
 export type MessageHandlerFunc<T extends object> = ({
