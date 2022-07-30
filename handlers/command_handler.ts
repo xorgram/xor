@@ -1,4 +1,4 @@
-import { HandlerFuncParams } from "./handler.ts";
+import { HandleFuncResult, HandlerFuncParams } from "./handler.ts";
 import { MessageHandler } from "./message_handler.ts";
 import env from "../env.ts";
 
@@ -12,7 +12,7 @@ export type CommandHandlerFunc<T extends object> = ({
   client,
   event,
   ...rest
-}: HandlerFuncParams & T) => Promise<void>;
+}: HandlerFuncParams & T) => HandleFuncResult;
 
 export interface CommandHandlerOpts {
   aliases?: string[];

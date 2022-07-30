@@ -2,6 +2,8 @@ import { NewMessageEvent, TelegramClient } from "$grm";
 
 export const End = Symbol();
 
+export type HandleFuncResult = Promise<void | typeof End>;
+
 export interface HandlerFuncParams {
   client: TelegramClient;
   event: NewMessageEvent;
@@ -14,5 +16,5 @@ export abstract class Handler {
 
   abstract handle(
     { client, event }: HandlerFuncParams,
-  ): Promise<void | typeof End>;
+  ): HandleFuncResult;
 }
