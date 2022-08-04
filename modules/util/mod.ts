@@ -1,3 +1,4 @@
+import { toFileUrl } from "std/path/mod.ts";
 import { Api, VERSION as telegramVersion } from "$grm";
 import { bigInt } from "$grm-deps";
 import {
@@ -7,7 +8,6 @@ import {
   longText,
   Module,
   type Stringable,
-  toFileUrl,
   updateMessage,
   version,
 } from "$xor";

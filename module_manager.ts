@@ -1,5 +1,7 @@
+import * as log from "std/log/mod.ts";
+import { join, resolve, toFileUrl } from "std/path/mod.ts";
 import { Api, NewMessageEvent, TelegramClient } from "$grm";
-import { bold, fmt, join, log, resolve, toFileUrl } from "./deps.ts";
+import { bold, fmt } from "./deps.ts";
 import { CommandHandler, End } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";

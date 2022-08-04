@@ -1,4 +1,5 @@
-import { getLevelByName, log } from "./deps.ts";
+import * as log from "std/log/mod.ts";
+import { getLevelByName } from "std/log/levels.ts";
 
 const level = (() => {
   let toReturn = "INFO";
