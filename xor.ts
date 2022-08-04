@@ -12,13 +12,11 @@ export {
   fmt,
   FormattedString,
   italic,
-  join,
   link,
   mentionUser,
   pre,
   spoiler,
   strikethrough,
   type Stringable,
-  toFileUrl,
   underline,
 } from "./deps.ts";

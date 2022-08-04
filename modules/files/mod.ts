@@ -1,14 +1,7 @@
+import { join } from "std/path/mod.ts";
 import { Api, CustomFile } from "$grm";
 import { Buffer } from "$grm-deps";
-import {
-  bold,
-  code,
-  CommandHandler,
-  fmt,
-  join,
-  Module,
-  updateMessage,
-} from "$xor";
+import { bold, code, CommandHandler, fmt, Module, updateMessage } from "$xor";
 import { parseAttributes } from "./helpers.ts";
 
 const files: Module = {
