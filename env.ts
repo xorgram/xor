@@ -1,4 +1,6 @@
-import { cleanEnv, config, log, makeValidator, num, str } from "./deps.ts";
+import * as log from "std/log/mod.ts";
+import { config } from "std/dotenv/mod.ts";
+import { cleanEnv, makeValidator, num, str } from "./deps.ts";
 
 await config({ export: true });
 
