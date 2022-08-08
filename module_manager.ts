@@ -73,6 +73,12 @@ export function managerModule(manager: ModuleManager): Module {
           } catch (_err) {
             //
           }
+          const key = `module_${arg}`;
+          const item = localStorage.getItem(key);
+          if (item) {
+            localStorage.removeItem(key);
+            uninstalled++;
+          }
         }
         await updateMessage(
           event,
