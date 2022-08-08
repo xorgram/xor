@@ -33,14 +33,14 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "Could not download the module.");
           return;
         }
-        const spec = join(externals, `.${media.document.id}.ts`);
+        const path = join(externals, `.${media.document.id}.ts`);
         await Deno.writeTextFile(
-          spec,
+          path,
           typeof result === "string" ? result : result.toString(),
         );
         let module;
         try {
-          module = await ModuleManager.file(spec);
+          module = await ModuleManager.file(ModuleManager.pathToSpec(path));
         } catch (_err) {
           await updateMessage(event, "The replied file is not a valid module.");
           return;
@@ -49,7 +49,7 @@ export function managerModule(manager: ModuleManager): Module {
           await updateMessage(event, "Module already installed.");
           return;
         }
-        await Deno.rename(spec, join(externals, `${module.name}.ts`));
+        await Deno.rename(path, join(externals, `${module.name}.ts`));
         manager.install(module, true);
         await updateMessage(event, "Module installed.");
       }),
@@ -254,12 +254,15 @@ export class ModuleManager {
   }
 
   static async file(spec: string) {
-    spec = toFileUrl(resolve(spec)).href;
     const mod = (await import(spec)).default;
     if (!isModule(mod)) {
       throw new Error("Invalid module");
     }
     return mod;
+  }
+
+  static pathToSpec(path: string) {
+    return toFileUrl(resolve(path)).href;
   }
 
   static async directory(path: string) {
@@ -272,13 +275,15 @@ export class ModuleManager {
       }
       all++;
       name = name.endsWith(".ts") ? name : `${name}/mod.ts`;
-      const spec = join(path, name);
+      const filePath = join(path, name);
       try {
-        const mod = await this.file(spec);
+        const mod = await ModuleManager.file(
+          ModuleManager.pathToSpec(filePath),
+        );
         modules.push(mod);
         loaded++;
       } catch (err) {
-        log.warning(`failed to load ${spec} from ${path}: ${err}`);
+        log.warning(`failed to load ${filePath} from ${path}: ${err}`);
       }
     }
     log.info(`loaded ${loaded}/${all} modules from ${path}`);
