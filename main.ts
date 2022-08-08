@@ -20,5 +20,13 @@ try {
 manager.installMultiple(modules, false);
 manager.install(managerModule(manager), false);
 manager.installMultiple(await ModuleManager.directory("externals"), true);
+manager.installMultiple(
+  await ModuleManager.files(
+    Object.keys(localStorage).filter((v) => v.startsWith("module_")).map((v) =>
+      localStorage.getItem(v)!
+    ),
+  ),
+  true,
+);
 client.addEventHandler(manager.handler, new NewMessage({}));
 client.start();
