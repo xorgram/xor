@@ -281,7 +281,7 @@ export class ModuleManager {
         log.warning(`failed to load ${spec} from ${path}: ${err}`);
       }
     }
-    log.info(`loaded ${loaded} of ${all} modules from ${path}`);
+    log.info(`loaded ${loaded}/${all} modules from ${path}`);
     return modules;
   }
 }
