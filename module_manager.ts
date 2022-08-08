@@ -77,6 +77,7 @@ export function managerModule(manager: ModuleManager): Module {
           const item = localStorage.getItem(key);
           if (item) {
             localStorage.removeItem(key);
+            manager.uninstall(arg);
             uninstalled++;
           }
         }
