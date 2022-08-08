@@ -261,6 +261,19 @@ export class ModuleManager {
     return mod;
   }
 
+  static async files(specs: string[]) {
+    const modules = new Array<Module>();
+    for (const spec of specs) {
+      try {
+        const module = await ModuleManager.file(spec);
+        modules.push(module);
+      } catch (err) {
+        log.warning(`failed to load ${spec}: ${err}`);
+      }
+    }
+    return modules;
+  }
+
   static pathToSpec(path: string) {
     return toFileUrl(resolve(path)).href;
   }
