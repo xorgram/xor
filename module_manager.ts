@@ -12,45 +12,54 @@ export function managerModule(manager: ModuleManager): Module {
   return {
     name: "manager",
     handlers: [
-      new CommandHandler("install", async ({ client, event }) => {
-        const reply = await event.message.getReplyMessage();
-        if (!reply) {
-          return;
+      new CommandHandler("install", async ({ client, event, args }) => {
+        let spec = args[0] ?? "";
+        let path: string | undefined;
+        if (!spec) {
+          const reply = await event.message.getReplyMessage();
+          if (!reply) {
+            return;
+          }
+          const { media } = reply;
+          if (
+            !(media instanceof Api.MessageMediaDocument) ||
+            !(media.document instanceof Api.Document) ||
+            !(media.document.attributes[0] instanceof
+              Api.DocumentAttributeFilename) ||
+            !media.document.attributes[0].fileName.endsWith(".ts") ||
+            media.document.size.gt(5000)
+          ) {
+            return;
+          }
+          const result = await client.downloadMedia(media, {});
+          if (!result) {
+            await updateMessage(event, "Could not download the module.");
+            return;
+          }
+          path = join(externals, `.${media.document.id}.ts`);
+          await Deno.writeTextFile(
+            path,
+            typeof result === "string" ? result : result.toString(),
+          );
+          spec = ModuleManager.pathToSpec(path);
         }
-        const { media } = reply;
-        if (
-          !(media instanceof Api.MessageMediaDocument) ||
-          !(media.document instanceof Api.Document) ||
-          !(media.document.attributes[0] instanceof
-            Api.DocumentAttributeFilename) ||
-          !media.document.attributes[0].fileName.endsWith(".ts") ||
-          media.document.size.gt(5000)
-        ) {
-          return;
-        }
-        const result = await client.downloadMedia(media, {});
-        if (!result) {
-          await updateMessage(event, "Could not download the module.");
-          return;
-        }
-        const path = join(externals, `.${media.document.id}.ts`);
-        await Deno.writeTextFile(
-          path,
-          typeof result === "string" ? result : result.toString(),
-        );
         let module;
         try {
-          module = await ModuleManager.file(ModuleManager.pathToSpec(path));
+          module = await ModuleManager.file(spec);
         } catch (_err) {
-          await updateMessage(event, "The replied file is not a valid module.");
+          await updateMessage(event, "Not a module.");
           return;
         }
         if (manager.modules.has(module.name)) {
           await updateMessage(event, "Module already installed.");
           return;
         }
-        await Deno.rename(path, join(externals, `${module.name}.ts`));
         manager.install(module, true);
+        if (path) {
+          await Deno.rename(path, join(externals, `${module.name}.ts`));
+        } else {
+          localStorage.setItem(`module_${module.name}`, spec);
+        }
         await updateMessage(event, "Module installed.");
       }),
       new CommandHandler("uninstall", async ({ event, args }) => {
@@ -263,14 +272,18 @@ export class ModuleManager {
 
   static async files(specs: string[]) {
     const modules = new Array<Module>();
+    let all = 0;
     for (const spec of specs) {
       try {
         const module = await ModuleManager.file(spec);
         modules.push(module);
       } catch (err) {
         log.warning(`failed to load ${spec}: ${err}`);
+      } finally {
+        all++;
       }
     }
+    log.info(`loaded ${modules.length}/${all} external modules`);
     return modules;
   }
 
@@ -281,12 +294,10 @@ export class ModuleManager {
   static async directory(path: string) {
     const modules = new Array<Module>();
     let all = 0;
-    let loaded = 0;
     for await (let { name, isFile, isDirectory } of Deno.readDir(path)) {
       if ((!isFile && !isDirectory) || name.startsWith(".")) {
         continue;
       }
-      all++;
       name = name.endsWith(".ts") ? name : `${name}/mod.ts`;
       const filePath = join(path, name);
       try {
@@ -294,12 +305,13 @@ export class ModuleManager {
           ModuleManager.pathToSpec(filePath),
         );
         modules.push(mod);
-        loaded++;
       } catch (err) {
         log.warning(`failed to load ${filePath} from ${path}: ${err}`);
+      } finally {
+        all++;
       }
     }
-    log.info(`loaded ${loaded}/${all} modules from ${path}`);
+    log.info(`loaded ${modules.length}/${all} external modules from ${path}`);
     return modules;
   }
 }
