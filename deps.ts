@@ -5,4 +5,4 @@ export {
   num,
   str,
 } from "https://deno.land/x/envalid@v0.0.3/mod.ts";
-export * from "https://deno.land/x/grm_parse@0.0.4/mod.ts";
+export * from "https://deno.land/x/grm_parse@0.0.5/mod.ts";
