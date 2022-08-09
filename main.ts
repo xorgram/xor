@@ -1,5 +1,5 @@
 import { NewMessage, StringSession, TelegramClient } from "$grm";
-import "./setup_log.ts";
+import "./setup.ts";
 import env from "./env.ts";
 import modules from "./modules/mod.ts";
 import { managerModule, ModuleManager } from "./module_manager.ts";
