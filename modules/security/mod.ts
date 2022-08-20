@@ -1,10 +1,4 @@
-import {
-  bold,
-  CommandHandler,
-  fmt,
-  Module,
-  updateMessage,
-} from "$xor";
+import { bold, CommandHandler, fmt, Module, updateMessage } from "$xor";
 import { lsKey } from "../../client.ts";
 
 const security: Module = {
