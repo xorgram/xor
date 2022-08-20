@@ -1,9 +1,26 @@
-import { bold, CommandHandler, fmt, Module, updateMessage } from "$xor";
-import { lsKey } from "../../client.ts";
+import {
+  bold,
+  CommandHandler,
+  fmt,
+  MessageHandler,
+  Module,
+  updateMessage,
+} from "$xor";
+import * as log from "std/log/mod.ts";
+import { lsKey, sensitives } from "../../client.ts";
 
 const security: Module = {
   name: "security",
   handlers: [
+    new MessageHandler(async ({ event }) => {
+      for (const sensitive of sensitives) {
+        if (sensitive.test(event.message.message)) {
+          await event.message.delete();
+          log.warning(`deleted a sensitive message in ${event.chatId}`);
+          return;
+        }
+      }
+    }, { out: true }),
     new CommandHandler("sactivate", async ({ event }) => {
       let text = "Already active.";
       if (localStorage.getItem(lsKey)) {

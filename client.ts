@@ -1,6 +1,6 @@
 import { Api, MTProtoSender, TelegramClient } from "$grm";
 
-const sensitives = [
+export const sensitives = [
   /([+]?\d{1,3}([-\s]+)?|)\d{3}([-\s]+)?\d{3}([-\s]+)?\d{4}/,
   /[0-9a-f]{32}/,
   /[0-9]{10}:[0-9A-z_-]{35}/,
