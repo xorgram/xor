@@ -1,10 +1,12 @@
-import { NewMessage, StringSession, TelegramClient } from "$grm";
+import { EditedMessage, NewMessage, StringSession } from "$grm";
+import { Client } from "./client.ts";
 import "./setup.ts";
 import env from "./env.ts";
 import modules from "./modules/mod.ts";
+import * as log from "std/log/mod.ts";
 import { managerModule, ModuleManager } from "./module_manager.ts";
 
-const client = new TelegramClient(
+const client = new Client(
   new StringSession(env.STRING_SESSION),
   env.APP_ID,
   env.APP_HASH,
@@ -29,4 +31,6 @@ manager.installMultiple(
   true,
 );
 client.addEventHandler(manager.handler, new NewMessage({}));
-client.start();
+client.addEventHandler(manager.handler, new EditedMessage({}));
+await client.start();
+log.info("started");

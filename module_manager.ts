@@ -1,8 +1,8 @@
 import * as log from "std/log/mod.ts";
 import { join, resolve, toFileUrl } from "std/path/mod.ts";
-import { Api, NewMessageEvent, TelegramClient } from "$grm";
+import { Api, TelegramClient } from "$grm";
 import { bold, fmt } from "./deps.ts";
-import { CommandHandler, End } from "./handlers/mod.ts";
+import { CommandHandler, End, Event } from "./handlers/mod.ts";
 import { updateMessage } from "./helpers.ts";
 import { getHelp, isModule, Module } from "./module.ts";
 
@@ -211,7 +211,7 @@ export class ModuleManager {
     public disabled = new Set<string>(),
   ) {}
 
-  handler = async (event: NewMessageEvent) => {
+  handler = async (event: Event) => {
     for (const [, [{ name, handlers }, disableable]] of this.modules) {
       if (disableable && this.disabled.has(name)) {
         return;

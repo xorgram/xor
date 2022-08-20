@@ -1,5 +1,5 @@
 import { HandleFuncResult, HandlerFuncParams } from "./handler.ts";
-import { MessageHandler } from "./message_handler.ts";
+import { MessageHandler, MessageHandlerParams } from "./message_handler.ts";
 import env from "../env.ts";
 
 export interface CommandHandlerFuncParams {
@@ -14,23 +14,20 @@ export type CommandHandlerFunc<T extends object> = ({
   ...rest
 }: HandlerFuncParams & T) => HandleFuncResult;
 
-export interface CommandHandlerOpts {
+export interface CommandHandlerParams extends MessageHandlerParams {
   aliases?: string[];
   rawArgs?: boolean;
   rawInput?: boolean;
 }
 
 export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
-  opts: CommandHandlerOpts;
-
   constructor(
     public name: string,
     public func: CommandHandlerFunc<CommandHandlerFuncParams>,
-    opts?: CommandHandlerOpts,
+    public params: CommandHandlerParams = {},
   ) {
-    super(func);
-    this.opts = opts ?? {};
-    this.opts.rawInput = this.opts.rawInput ?? true;
+    super(func, params);
+    this.params.rawInput = this.params.rawInput ?? true;
   }
 
   async check({ client, event }: HandlerFuncParams) {
@@ -42,12 +39,12 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
       return false;
     }
     const command = text.split(/\s/)[0].slice(1);
-    return this.name == command || !!this.opts?.aliases?.includes(command);
+    return this.name == command || !!this.params.aliases?.includes(command);
   }
 
   async handle({ client, event }: HandlerFuncParams) {
     const { text, message } = event.message;
-    const args = (this.opts?.rawArgs ? message : text)
+    const args = (this.params.rawArgs ? message : text)
       .split("\n")[0]
       .split(/\s/)
       .slice(1);
@@ -56,7 +53,7 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
     const reply = await event.message.getReplyMessage();
     switch (inputType) {
       case env.COMMAND_PREFIX:
-        input = (this.opts?.rawInput ? message : text)
+        input = (this.params.rawInput ? message : text)
           .split("\n")
           .slice(1)
           .join("\n")
@@ -64,7 +61,7 @@ export class CommandHandler extends MessageHandler<CommandHandlerFuncParams> {
         break;
       case env.INPUT_PREFIX:
         if (reply && reply.text) {
-          input = this.opts?.rawInput ? reply.message : reply.text;
+          input = this.params.rawInput ? reply.message : reply.text;
         }
     }
     await this.func({ client, event, args, input });
