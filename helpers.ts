@@ -1,10 +1,11 @@
 // This file will include helpers for all modules (built-in and externals).
-import { CustomFile, NewMessageEvent, SendMessageParams } from "$grm";
+import { CustomFile, SendMessageParams } from "$grm";
 import { Buffer } from "$grm-deps";
+import { Event } from "./handlers/mod.ts";
 import { fmt, pre, type Stringable } from "./deps.ts";
 
 export function updateMessage(
-  event: NewMessageEvent,
+  event: Event,
   text: Stringable,
 ) {
   return event.message.edit(

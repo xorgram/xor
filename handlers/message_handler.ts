@@ -1,3 +1,4 @@
+import { EditedMessageEvent } from "$grm";
 import { HandleFuncResult, Handler, HandlerFuncParams } from "./handler.ts";
 
 // deno-lint-ignore ban-types
@@ -7,31 +8,41 @@ export type MessageHandlerFunc<T extends object> = ({
   ...rest
 }: HandlerFuncParams & T) => HandleFuncResult;
 
-// deno-lint-ignore ban-types
-export class MessageHandler<T extends object> extends Handler {
+export interface MessageHandlerParams {
   out?: boolean;
   scope?: "all" | "group" | "private" | "channel";
   allowForward?: boolean;
+  allowEdit?: boolean;
+}
 
-  constructor(public func: MessageHandlerFunc<T>) {
+// deno-lint-ignore ban-types
+export class MessageHandler<T extends object> extends Handler {
+  constructor(
+    public func: MessageHandlerFunc<T>,
+    public params?: MessageHandlerParams,
+  ) {
     super();
   }
 
   // deno-lint-ignore require-await
   async check({ event }: HandlerFuncParams) {
-    if (this.out !== undefined && this.out !== event.message.out) {
+    if (
+      this.params?.allowEdit == false && event instanceof EditedMessageEvent
+    ) {
       return false;
     }
-    if (!event.message.out) {
+    if (event.message.out != (this.params?.out ?? false)) {
       return false;
     }
-    if (this.allowForward != false && event.message.forward !== undefined) {
+    if (
+      this.params?.allowForward != false && event.message.forward !== undefined
+    ) {
       return false;
     }
-    if (this.scope !== undefined && this.scope !== "all") {
-      if (this.scope == "group" && !event.isGroup) {
+    if (this.params?.scope !== undefined && this.params?.scope !== "all") {
+      if (this.params?.scope == "group" && !event.isGroup) {
         return false;
-      } else if (this.scope == "private" && !event.isPrivate) {
+      } else if (this.params?.scope == "private" && !event.isPrivate) {
         return false;
       } else if (!event.isChannel) {
         return false;
