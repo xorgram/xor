@@ -1,4 +1,4 @@
-import { NewMessage, StringSession } from "$grm";
+import { EditedMessage, NewMessage, StringSession } from "$grm";
 import { Client } from "./client.ts";
 import "./setup.ts";
 import env from "./env.ts";
@@ -31,5 +31,6 @@ manager.installMultiple(
   true,
 );
 client.addEventHandler(manager.handler, new NewMessage({}));
+client.addEventHandler(manager.handler, new EditedMessage({}));
 await client.start();
 log.info("started");
