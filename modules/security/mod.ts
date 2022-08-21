@@ -52,7 +52,7 @@ const security: Module = {
 
 This module adds a request blocking layer to block requests that might contain sensitive information (e.g. phone numbers or API keys). It also deletes outgoing messages that might contain sensitive information.
 
-You can make suppress the automatic deletion of sensitive outgoing messages with the prefix "signore".
+You can suppress the automatic deletion of sensitive outgoing messages with the prefix "signore".
 
 ${bold("Commands")}
 
