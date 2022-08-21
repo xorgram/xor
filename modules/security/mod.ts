@@ -17,10 +17,12 @@ const security: Module = {
         for (const sensitive of sensitives) {
           if (sensitive.test(event.message.message)) {
             await event.message.delete();
-            log.warning(`deleted a sensitive message in ${event.chatId}`);
+            log.info(`deleted a sensitive message in ${event.chatId}`);
             return;
           }
         }
+      } else {
+        log.warning("the security module is not active");
       }
     }),
     new CommandHandler("sactivate", async ({ event }) => {
