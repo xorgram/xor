@@ -14,16 +14,18 @@ const security: Module = {
   handlers: [
     new MessageHandler(async ({ event }) => {
       let toDelete = false;
-      for (const sensitive of sensitives) {
-        if (sensitive.test(event.message.message)) {
-          toDelete = true;
-          log.info(`deleted a sensitive message in ${event.chatId}`);
-          return;
+      if (!event.message.text.startsWith("signore")) {
+        for (const sensitive of sensitives) {
+          if (sensitive.test(event.message.message)) {
+            toDelete = true;
+            break;
+          }
         }
       }
       if (toDelete) {
         if (!localStorage.getItem(lsKey)) {
           await event.message.delete();
+          log.info(`deleted a sensitive message in ${event.chatId}`);
         } else {
           log.warning("the security module is not active");
         }
@@ -49,6 +51,8 @@ const security: Module = {
   help: fmt`${bold("Introduction")}
 
 This module adds a request blocking layer to block requests that might contain sensitive information (e.g. phone numbers or API keys). It also deletes outgoing messages that might contain sensitive information.
+
+You can make suppress the automatic deletion of sensitive outgoing messages with the prefix "signore".
 
 ${bold("Commands")}
 
