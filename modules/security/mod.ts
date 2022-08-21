@@ -20,7 +20,7 @@ const security: Module = {
           return;
         }
       }
-    }, { out: true }),
+    }),
     new CommandHandler("sactivate", async ({ event }) => {
       let text = "Already active.";
       if (localStorage.getItem(lsKey)) {
