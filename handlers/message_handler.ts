@@ -31,7 +31,7 @@ export class MessageHandler<T extends object> extends Handler {
     ) {
       return false;
     }
-    if (event.message.out != (this.params?.out ?? false)) {
+    if (event.message.out != (this.params?.out ?? true)) {
       return false;
     }
     if (
