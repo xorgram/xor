@@ -13,16 +13,20 @@ const security: Module = {
   name: "security",
   handlers: [
     new MessageHandler(async ({ event }) => {
-      if (!localStorage.getItem(lsKey)) {
-        for (const sensitive of sensitives) {
-          if (sensitive.test(event.message.message)) {
-            await event.message.delete();
-            log.info(`deleted a sensitive message in ${event.chatId}`);
-            return;
-          }
+      let toDelete = false;
+      for (const sensitive of sensitives) {
+        if (sensitive.test(event.message.message)) {
+          toDelete = true;
+          log.info(`deleted a sensitive message in ${event.chatId}`);
+          return;
         }
-      } else {
-        log.warning("the security module is not active");
+      }
+      if (toDelete) {
+        if (!localStorage.getItem(lsKey)) {
+          await event.message.delete();
+        } else {
+          log.warning("the security module is not active");
+        }
       }
     }),
     new CommandHandler("sactivate", async ({ event }) => {
