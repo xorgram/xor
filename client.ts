@@ -1,3 +1,4 @@
+import * as log from "std/log/mod.ts";
 import { Api, MTProtoSender, TelegramClient } from "$grm";
 
 export const sensitives = [
@@ -26,6 +27,8 @@ export class Client extends TelegramClient {
           throw new Error("Request might contain sensitive information");
         }
       }
+    } else {
+      log.warning("the security module is not active");
     }
     return super.invoke(request, sender);
   }
