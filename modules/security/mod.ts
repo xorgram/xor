@@ -18,14 +18,14 @@ const security: Module = {
         for (const sensitive of sensitives) {
           if (sensitive.test(event.message.message)) {
             toDelete = true;
-            log.info(`deleted a sensitive message in ${event.chatId}`);
-            return;
+            break;
           }
         }
       }
       if (toDelete) {
         if (!localStorage.getItem(lsKey)) {
           await event.message.delete();
+          log.info(`deleted a sensitive message in ${event.chatId}`);
         } else {
           log.warning("the security module is not active");
         }
