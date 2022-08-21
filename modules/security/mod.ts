@@ -13,11 +13,13 @@ const security: Module = {
   name: "security",
   handlers: [
     new MessageHandler(async ({ event }) => {
-      for (const sensitive of sensitives) {
-        if (sensitive.test(event.message.message)) {
-          await event.message.delete();
-          log.warning(`deleted a sensitive message in ${event.chatId}`);
-          return;
+      if (!localStorage.getItem(lsKey)) {
+        for (const sensitive of sensitives) {
+          if (sensitive.test(event.message.message)) {
+            await event.message.delete();
+            log.warning(`deleted a sensitive message in ${event.chatId}`);
+            return;
+          }
         }
       }
     }),
