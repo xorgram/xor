@@ -27,7 +27,7 @@ export class MessageHandler<T extends object> extends Handler {
   // deno-lint-ignore require-await
   async check({ event }: HandlerFuncParams) {
     if (
-      this.params?.allowEdit == false && event instanceof EditedMessageEvent
+      !this.params?.allowEdit && event instanceof EditedMessageEvent
     ) {
       return false;
     }
