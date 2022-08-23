@@ -172,7 +172,7 @@ V8 ${Deno.version.v8}`,
       await event.message.reply(
         longText(result, "result.txt"),
       );
-    }),
+    }, { allowEdit: true }),
   ],
   help: fmt`${bold("Introduction")}
 
