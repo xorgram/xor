@@ -4,6 +4,6 @@
     "$grm-deps": "https://deno.land/x/grm@0.4.0/deps.ts",
     "$xor": "./xor.ts",
     "pls": "https://deno.land/x/pls@1.0.0/mod.ts",
-    "std/": "https://deno.land/std@0.154.0/"
+    "std/": "https://deno.land/std@0.158.0/"
   }
 }
