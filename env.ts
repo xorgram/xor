@@ -1,8 +1,6 @@
 import * as log from "std/log/mod.ts";
-import { config } from "std/dotenv/mod.ts";
+import "std/dotenv/load.ts";
 import { cleanEnv, makeValidator, num, str } from "./deps.ts";
-
-await config({ export: true });
 
 // https://stackoverflow.com/a/54256858/12250600
 const PREFIX_REGEX = /^[^\p{L}\d\s@#\$]$/u;
