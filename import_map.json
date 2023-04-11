@@ -1,9 +1,9 @@
 {
   "imports": {
-    "$grm": "https://deno.land/x/grm@0.5.4/mod.ts",
-    "$grm-deps": "https://deno.land/x/grm@0.5.4/deps.ts",
+    "$grm": "https://deno.land/x/grm@0.8.2/mod.ts",
+    "$grm-deps": "https://deno.land/x/grm@0.8.2/deps.ts",
     "$xor": "./xor.ts",
     "pls": "https://deno.land/x/pls@1.0.0/mod.ts",
-    "std/": "https://deno.land/std@0.173.0/"
+    "std/": "https://deno.land/std@0.182.0/"
   }
 }
