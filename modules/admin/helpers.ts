@@ -1,35 +1,45 @@
-import { Api, Client, constructUser, errors, User } from "$mtkruto";
+import { errors, User } from "$mtkruto";
+import * as log from "@std/log";
 import { Event, getReplyMessage } from "$xor";
+
+import { Client } from "../../client.ts";
 import { updateMessage } from "../../helpers.ts";
 
 export const getUser = async (
   event: Event,
   client: Client,
   args: string[],
-  getRank = false,
+  getRank = false
 ) => {
   let entity = {} as User;
   let rank = "Admin";
   const reply = await getReplyMessage(client, event);
   if (reply) {
-    const senderId = reply.from.id;
-    // if (sender && sender instanceof Api.User) {
-    //   entity = sender;
-    // }
     if (reply.from.type === "private" && reply.from.id) {
-      const peer = await client.getInputUser(senderId);
-      entity = constructUser(peer);
+      entity = reply.from;
     }
     if (getRank && args[0]) {
       rank = args[0];
     }
-  } else if (args[0] !== undefined && args[0].length != 0) {
-    const _entity = await client.getEntity(args[0]);
-    if (!(_entity instanceof Api.User)) {
+  } else if (args[0] !== undefined && args[0].length) {
+    try {
+      const chat = await client.getChat(args[0]);
+      if (chat.type !== "private") {
+        await updateMessage(client, event, "Invalid user ID/username.");
+        return;
+      }
+      entity = {
+        id: chat.id,
+        isBot: false,
+        firstName: chat.firstName || "",
+        lastName: chat.lastName,
+        username: chat.username,
+      } as User;
+    } catch (error) {
+      log.error(error);
       await updateMessage(client, event, "Invalid user ID/username.");
       return;
     }
-    entity = _entity;
     if (getRank && args[1]) {
       rank = args[1];
     }
@@ -78,17 +88,23 @@ export const expectedErrors: { [key: string]: string } = {
 };
 
 export async function wrapRpcErrors(
+  client: Client,
   event: Event,
-  func: () => Promise<void> | void,
+  func: () => Promise<void> | void
 ) {
   try {
     await func();
   } catch (error) {
     if (
-      error instanceof errors.RPCError &&
-      expectedErrors[error["errorMessage"]]
+      error instanceof errors.TelegramError &&
+      expectedErrors[error.errorMessage as keyof typeof expectedErrors]
     ) {
-      await updateMessage(event, expectedErrors[error["errorMessage"]]);
+      await updateMessage(
+        client,
+        event,
+        expectedErrors[error.errorMessage as keyof typeof expectedErrors]
+      );
+
       return;
     } else {
       throw error;

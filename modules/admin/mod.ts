@@ -1,174 +1,192 @@
-import { Api } from "$mtkruto";
-import {
-  bold,
-  CommandHandler,
-  fmt,
-  italic,
-  Methods,
-  Module,
-  updateMessage,
-} from "$xor";
+import { bold, CommandHandler, fmt, italic, Module, updateMessage } from "$xor";
 import { getUser, wrapRpcErrors } from "./helpers.ts";
 
 const admin: Module = {
   name: "admin",
   handlers: [
     new CommandHandler("promote", async ({ client, event, args }) => {
-      const chat = event.chat;
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
       const user = await getUser(event, client, args, true);
       if (!user) {
-        await event.editMessageText(event.msg.id, "User not found.");
+        await updateMessage(client, event, "User not found.");
         return;
       }
-      if (Api.is("channel", chat)) {
-        chat.
-        const xor = new Methods(client);
-        await wrapRpcErrors(event, async () => {
-          await xor.promoteChatMember({
-            chatId: chat.id,
-            userId: user.entity,
+      if (["channel", "supergroup"].includes(chat.type)) {
+        await wrapRpcErrors(client, event, async () => {
+          await client.invoke({
+            _: "channels.editAdmin",
+            channel: await client.getInputChannel(chat.id),
+            user_id: await client.getInputUser(user.entity.id),
+            admin_rights: {
+              _: "chatAdminRights",
+              change_info: true,
+              delete_messages: true,
+              edit_messages: true,
+              invite_users: true,
+              manage_call: true,
+              pin_messages: true,
+              add_admins: true,
+              ban_users: true,
+            },
             rank: user.rank,
-            canChangeInfo: chat.adminRights?.changeInfo,
-            canDeleteMessages: chat.adminRights?.deleteMessages,
-            canEditMessages: chat.adminRights?.editMessages,
-            canInviteUsers: chat.adminRights?.inviteUsers,
-            canManageCalls: chat.adminRights?.manageCall,
-            canPinMessages: chat.adminRights?.pinMessages,
-            canPromoteMembers: chat.adminRights?.addAdmins,
-            canRestrictMembers: chat.adminRights?.banUsers,
           });
-          await updateMessage(event, "User promoted.");
+          await updateMessage(client, event, "User promoted.");
         });
       } else {
-        await updateMessage(event, "Cannot promote here.");
+        await updateMessage(client, event, "Cannot promote here.");
       }
     }),
     new CommandHandler("demote", async ({ client, event, args }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await updateMessage(event, "User not found.");
+        await updateMessage(client, event, "User not found.");
         return;
       }
-      if (chat instanceof Api.Channel) {
-        const xor = new Methods(client);
-        await wrapRpcErrors(event, async () => {
-          await xor.promoteChatMember({
-            chatId: chat.id,
-            userId: user.entity,
-            rank: user.rank,
-            canManageChat: false,
+      if (["channel", "supergroup"].includes(chat.type)) {
+        await wrapRpcErrors(client, event, async () => {
+          await client.invoke({
+            _: "channels.editAdmin",
+            channel: await client.getInputChannel(chat.id),
+            user_id: await client.getInputUser(user.entity.id),
+            admin_rights: {
+              _: "chatAdminRights",
+            },
+            rank: "",
           });
-          await updateMessage(event, "User demoted.");
+          await updateMessage(client, event, "User demoted.");
         });
       } else {
-        await updateMessage(event, "Cannot demote here.");
+        await updateMessage(client, event, "Cannot demote here.");
       }
     }),
     new CommandHandler("ban", async ({ client, event, args }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await updateMessage(event, "User not found.");
+        await updateMessage(client, event, "User not found.");
         return;
       }
-      await wrapRpcErrors(event, async () => {
-        const xor = new Methods(client);
-        await xor.banChatMember({
-          chatId: chat.id,
-          userId: await client.getEntity(user.entity),
+      await wrapRpcErrors(client, event, async () => {
+        await client.invoke({
+          _: "channels.editBanned",
+          channel: await client.getInputChannel(chat.id),
+          participant: await client.getInputPeer(user.entity.id),
+          banned_rights: {
+            _: "chatBannedRights",
+            view_messages: true,
+            send_messages: true,
+            send_media: true,
+            send_stickers: true,
+            send_gifs: true,
+            send_games: true,
+            send_inline: true,
+            embed_links: true,
+            send_polls: true,
+            change_info: true,
+            invite_users: true,
+            pin_messages: true,
+            until_date: 0,
+          },
         });
-        await updateMessage(event, "User banned.");
+        await updateMessage(client, event, "User banned.");
       });
     }),
     new CommandHandler("unban", async ({ client, event, args }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await updateMessage(event, "User not found.");
+        await updateMessage(client, event, "User not found.");
         return;
       }
-      await wrapRpcErrors(event, async () => {
-        const xor = new Methods(client);
-        await xor.unbanChatMember({
-          chatId: chat.id,
-          userId: await client.getEntity(user.entity),
+      await wrapRpcErrors(client, event, async () => {
+        await client.invoke({
+          _: "channels.editBanned",
+          channel: await client.getInputChannel(chat.id),
+          participant: await client.getInputPeer(user.entity.id),
+          banned_rights: {
+            _: "chatBannedRights",
+            until_date: 0,
+          },
         });
-        await updateMessage(event, "User unbanned.");
+        await updateMessage(client, event, "User unbanned.");
       });
     }),
     new CommandHandler("pin", async ({ client, event, args }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
-      const reply = await event.message.getReplyMessage();
+      const reply = await client.getMessage(
+        chat.id,
+        event.msg.replyToMessageId!
+      );
       if (reply) {
-        const xor = new Methods(client);
-        await wrapRpcErrors(event, async () => {
-          await xor.pinChatMessage({
-            chatId: chat.id,
-            messageId: reply.id,
-            disableNotification: args[0] === "silent",
+        await wrapRpcErrors(client, event, async () => {
+          await client.invoke({
+            _: "messages.updatePinnedMessage",
+            peer: await client.getInputPeer(chat.id),
+            id: reply.id,
+            silent: args[0] === "silent" || undefined,
           });
-          await updateMessage(event, "Message pinned.");
+          await updateMessage(client, event, "Message pinned.");
         });
       } else {
-        await updateMessage(event, "Reply a message to pin.");
+        await updateMessage(client, event, "Reply a message to pin.");
       }
     }),
     new CommandHandler("unpin", async ({ client, event }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
-      const reply = await event.message.getReplyMessage();
+      const reply = await client.getMessage(
+        chat.id,
+        event.msg.replyToMessageId!
+      );
       if (reply) {
-        const xor = new Methods(client);
-        await wrapRpcErrors(event, async () => {
-          const resp = await xor.unpinChatMessage({
-            chatId: chat.id,
-            messageId: reply.id,
+        await wrapRpcErrors(client, event, async () => {
+          await client.invoke({
+            _: "messages.updatePinnedMessage",
+            peer: await client.getInputPeer(chat.id),
+            id: reply.id,
+            unpin: true,
           });
-          if (resp instanceof Api.Updates) {
-            await updateMessage(
-              event,
-              resp.updates.length
-                ? "Message unpinned."
-                : "Message was not pinned.",
-            );
-          }
+          await updateMessage(client, event, "Message unpinned.");
         });
       } else {
-        await updateMessage(event, "Reply a pinned message to unpin.");
+        await updateMessage(client, event, "Reply a pinned message to unpin.");
       }
     }),
     new CommandHandler("add", async ({ client, event, args }) => {
-      const chat = await event.message.getChat();
+      const chat = event.msg.chat;
       if (!chat) {
         return;
       }
       const user = await getUser(event, client, args);
       if (!user) {
-        await updateMessage(event, "User not found.");
+        await updateMessage(client, event, "User not found.");
         return;
       }
-      await wrapRpcErrors(event, async () => {
-        const xor = new Methods(client);
-        await xor.addChatMembers({ chatId: chat, userId: user.entity });
-        await updateMessage(event, "User added.");
+      await wrapRpcErrors(client, event, async () => {
+        await client.invoke({
+          _: "channels.inviteToChannel",
+          channel: await client.getInputChannel(chat.id),
+          users: [await client.getInputUser(user.entity.id)],
+        });
+        await updateMessage(client, event, "User added.");
       });
     }),
   ],
@@ -198,11 +216,9 @@ Unbans the requested user from the chat.
 
 Adds the requested user to the chat.
 
-${
-    italic(
-      "Note: The commands above work by replying to a user or passing their username or ID as the first argument.",
-    )
-  }
+${italic(
+  "Note: The commands above work by replying to a user or passing their username or ID as the first argument."
+)}
 
 - pin
 
