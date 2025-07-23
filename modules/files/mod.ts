@@ -72,11 +72,12 @@ const files: Module = {
           return;
         }
         await updateMessage(client, event, "Uploading...");
+        const fileName = args[0].split("/").pop() || "file.bin";
         const file = await Deno.open(filePath, { read: true });
         try {
-          await client.sendDocument(event.chat.id, file.readable);
+          await client.sendDocument(event.chat.id, file.readable, { fileName });
           await updateMessage(client, event, "Uploaded.");
-        } finally {
+        } catch {} finally {
           file.close();
         }
       },

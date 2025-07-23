@@ -1,36 +1,36 @@
-import { toFileUrl } from "std/path/mod.ts";
-import { Api, VERSION as telegramVersion } from "$grm";
-import { bigInt } from "$grm-deps";
+import { toFileUrl } from "@std/path";
+import { getRandomId } from "$mtkruto";
 import {
   bold,
   CommandHandler,
   fmt,
-  longText,
   Module,
+  sendLongText,
   type Stringable,
   updateMessage,
   version,
+  mtkrutoVersion,
+  getReplyMessage,
 } from "$xor";
 import { whois } from "./helpers.ts";
 
 const LOAD_TIME = Date.now();
+// const telegramVersion =
 
-const EVAL_HEADER =
-  `import { Api, type NewMessageEvent, type TelegramClient } from "$grm";
-import { Methods } from "$xor";
+const EVAL_HEADER = `import { Api } from "$mtkruto";
+import { Client, NewMessageEvent, getReplyMessage } from "$xor";
 
 interface EvalParams {
-  client: TelegramClient;
+  client: Client;
   event: NewMessageEvent;
 }
 
 export async function eval_({ client, event }: EvalParams): Promise<any> {
   const c = client;
   const e = event;
-  const message = event.message;
+  const message = event.msg;
   const m = message;
-  const methods = new Methods(client);
-  const reply = await message.getReplyMessage();
+  const reply = await getReplyMessage(client, event);
   const r = reply;
 `;
 
@@ -41,104 +41,109 @@ const util: Module = {
   handlers: [
     new CommandHandler("ping", async ({ client, event }) => {
       const before = Date.now();
-      await client.invoke(new Api.Ping({ pingId: bigInt(0) }));
+      await client.invoke({ _: "ping", ping_id: getRandomId() });
       const diff = Date.now() - before;
-      await updateMessage(event, `${diff}ms`);
+      await updateMessage(client, event, `${diff}ms`);
     }),
     new CommandHandler(
       "shell",
-      async ({ event, args, input }) => {
+      async ({ client, event, args, input }) => {
         if (args.length < 1) {
           return;
         }
         args = args.slice(1);
-        let { text } = event.message;
+        let { text } = event.msg;
         text = text.slice(text.split(/\s/)[0].length);
-        const cmd = text.trim().split(/\s/);
-        const proc = Deno.run({
-          cmd,
+        const [cmd, ..._args] = text.trim().split(/\s/);
+        const proc = new Deno.Command(cmd, {
+          args: _args,
           stdout: "piped",
           stderr: "piped",
           stdin: input.length == 0 ? undefined : "piped",
-        });
+        }).spawn();
         text = `[${proc.pid}]${text}`;
-        await event.message.edit({ text });
+        await updateMessage(client, event, text);
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();
+
         if (input.length != 0) {
-          proc.stdin?.write(encoder.encode(input));
-          proc.stdin?.close();
+          const stdinWriter = proc.stdin.getWriter();
+          await stdinWriter.write(encoder.encode(input));
+          await stdinWriter.close();
         }
-        const stdout = decoder.decode(await proc.output());
-        const stderr = decoder.decode(await proc.stderrOutput());
+        const stdoutReader = proc.stdout.getReader();
+        const { value: stdoutChunk } = await stdoutReader.read();
+        const stdout = decoder.decode(stdoutChunk ?? new Uint8Array());
+        stdoutReader.releaseLock();
+
+        const stderrReader = proc.stderr.getReader();
+        const { value: stderrChunk } = await stderrReader.read();
+        const stderr = decoder.decode(stderrChunk ?? new Uint8Array());
+        stderrReader.releaseLock();
         if (stdout.length > 0) {
-          await event.message.reply(
-            longText(stdout, "stdout.txt"),
-          );
+          await sendLongText(client, event, stdout, true, "stdout.txt");
         }
         if (stderr.length > 0) {
-          await event.message.reply(
-            longText(stderr, "stderr.txt"),
-          );
+          await sendLongText(client, event, stderr, true, "stderr.txt");
         }
-        const { code } = await proc.status();
+        const code = (await proc.status).code;
         text += "\n" + `Exited with code ${code}.`;
-        await event.message.edit({ text });
+        await updateMessage(client, event, text);
       },
       {
         aliases: ["sh", "cmd", "exec"],
-      },
+      }
     ),
-    new CommandHandler("uptime", async ({ event }) => {
-      let seconds = Math.floor(
-        (Date.now() - LOAD_TIME) / 1000,
-      );
+    new CommandHandler("uptime", async ({ client, event }) => {
+      let seconds = Math.floor((Date.now() - LOAD_TIME) / 1000);
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds - hours * 3600) / 60);
       seconds = seconds - hours * 3600 - minutes * 60;
       // TODO: use deno std for the time format?
       await updateMessage(
+        client,
         event,
         (hours > 0 ? `${hours > 9 ? hours : "0" + hours}:` : "") +
           `${minutes > 9 ? minutes : "0" + minutes}:` +
-          `${seconds > 9 ? seconds : "0" + seconds}`,
+          `${seconds > 9 ? seconds : "0" + seconds}`
       );
     }),
     new CommandHandler(
       "version",
-      async ({ event }) => {
+      async ({ event, client }) => {
         await updateMessage(
+          client,
           event,
-          `Grm ${telegramVersion}
+          `MTKruto ${mtkrutoVersion}
 Xor ${version}
 
 Deno ${Deno.version.deno}
 TypeScript ${Deno.version.typescript}
-V8 ${Deno.version.v8}`,
+V8 ${Deno.version.v8}`
         );
       },
-      { aliases: ["v"] },
+      { aliases: ["v"] }
     ),
     new CommandHandler("whois", async ({ client, event, args }) => {
       const info = new Array<Stringable>();
       if (args[0] !== undefined && args[0].length != 0) {
-        const entity = await client.getEntity(args[0]);
+        const entity = await client.getInputUser(args[0]);
         info.push((await whois(entity, client)).trim() + "\n\n");
       }
-      const chat = await event.message.getChat();
+      const chat = await client.getChat(event.msg.chat.id);
       if (chat) {
-        info.push(fmt`${bold("Here")}\n`);
+        info.push(fmt`${bold("Here")}\n`); // @ts-expect-error asdf
         info.push((await whois(chat, client)).trim() + "\n\n");
       }
-      const reply = await event.message.getReplyMessage();
+      const reply = await getReplyMessage(client, event);
       if (reply) {
-        const sender = await reply.getSender();
+        const sender = await client.getInputUser(reply.from.id);
         if (sender) {
           info.push(fmt`${bold("Reply")}\n`);
           info.push((await whois(sender, client)).trim() + "\n\n");
         }
-        if (reply.forward) {
-          const sender = await reply.forward.getSender();
+        if (reply.forwardFrom && reply.forwardFrom.type === "user") {
+          const sender = await client.getInputUser(reply.forwardFrom.user.id);
           if (sender) {
             info.push(fmt`${bold("Forwarder")}\n`);
             info.push((await whois(sender, client)).trim() + "\n\n");
@@ -148,31 +153,31 @@ V8 ${Deno.version.v8}`,
       if (info.length == 0) {
         return;
       }
-      await updateMessage(event, fmt(["\n", ...info.map(() => "")], ...info));
+      await updateMessage(
+        client,
+        event,
+        fmt(["\n", ...info.map(() => "")], ...info)
+      );
     }),
-    new CommandHandler("eval", async ({ client, event, input }) => {
-      const path = await Deno.makeTempFile({ suffix: ".ts" });
-      await Deno.writeTextFile(path, `${EVAL_HEADER}${input}${EVAL_FOOTER}`);
-      const { eval_ } = await import(toFileUrl(path).href);
-      await Deno.remove(path);
-      let result = JSON.stringify(
-        await eval_({ client, event }),
-        null,
-        4,
-      );
-      if (!result) {
-        await event.message.reply({
-          message: "No output.",
-        });
-        return;
-      }
-      if (result.startsWith('"')) {
-        result = result.replace(/"/g, "");
-      }
-      await event.message.reply(
-        longText(result, "result.txt"),
-      );
-    }, { allowEdit: true }),
+    new CommandHandler(
+      "eval",
+      async ({ client, event, input }) => {
+        const path = await Deno.makeTempFile({ suffix: ".ts" });
+        await Deno.writeTextFile(path, `${EVAL_HEADER}${input}${EVAL_FOOTER}`);
+        const { eval_ } = await import(toFileUrl(path).href);
+        await Deno.remove(path);
+        let result = JSON.stringify(await eval_({ client, event }), null, 4);
+        if (!result) {
+          await event.reply("No output.");
+          return;
+        }
+        if (result.startsWith('"')) {
+          result = result.replace(/"/g, "");
+        }
+        await sendLongText(client, event, result, true, "result.txt");
+      },
+      { allowEdit: true }
+    ),
   ],
   help: fmt`${bold("Introduction")}
 

@@ -6,7 +6,7 @@ import { Client } from "./client.ts";
 export async function updateMessage(
   client: Client,
   event: Event,
-  text: Stringable,
+  text: Stringable
 ): Promise<void> {
   try {
     const msg = fmt`${event.msg.text}\n${text}`;
@@ -26,7 +26,7 @@ export async function getReplyMessage(client: Client, event: Event) {
   try {
     return await client.getMessage(
       event.msg.chat.id,
-      event.msg.replyToMessageId,
+      event.msg.replyToMessageId
     );
   } catch (error) {
     console.error("Failed to get reply message:", error);
@@ -36,7 +36,7 @@ export async function getReplyMessage(client: Client, event: Event) {
 
 export async function downloadDocument(
   client: Client,
-  doc: MessageDocument,
+  doc: MessageDocument
 ): Promise<string | null> {
   try {
     const chunks: Uint8Array[] = [];
@@ -44,7 +44,7 @@ export async function downloadDocument(
       chunks.push(chunk);
     }
     const combined = new Uint8Array(
-      chunks.reduce((acc, chunk) => acc + chunk.length, 0),
+      chunks.reduce((acc, chunk) => acc + chunk.length, 0)
     );
     let offset = 0;
     for (const chunk of chunks) {
@@ -69,4 +69,29 @@ export function createLongMessage(text: string, filename?: string) {
     fileName: filename || "output.txt",
     caption: "Output too long, sent as file",
   };
+}
+
+export async function sendLongText(
+  client: Client,
+  event: Event,
+  text: string,
+  reply = false,
+  filename?: string
+): Promise<void> {
+  const { document, fileName, caption } = createLongMessage(text, filename);
+  if (document) {
+    await client.sendDocument(event.msg.chat.id, document, {
+      fileName,
+      caption,
+      ...(reply
+        ? { replyTo: { chatId: event.msg.chat.id, messageId: event.msg.id } }
+        : {}),
+    });
+  } else {
+    await client.sendMessage(event.msg.chat.id, text, {
+      ...(reply
+        ? { replyTo: { chatId: event.msg.chat.id, messageId: event.msg.id } }
+        : {}),
+    });
+  }
 }
