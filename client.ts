@@ -1,5 +1,8 @@
-// import * as log from "@std/log";
-import { Client as MTKrutoClient } from "$mtkruto";
+import { Client as MTKrutoClient, Context } from "$mtkruto";
+
+import { ReplyFmt } from "./deps.ts";
+
+export type XorContext = Context & ReplyFmt;
 
 export const sensitives = [
   /([+]?\d{1,3}([-\s]+)?|)\d{3}([-\s]+)?\d{3}([-\s]+)?\d{4}/,
@@ -9,8 +12,7 @@ export const sensitives = [
 
 export const lsKey = "deactivate_security";
 
-export class Client extends MTKrutoClient {
-  #invoke() {}
+export class Client extends MTKrutoClient<XorContext> {
   // invoke(request: Api.AnyRequest, sender?: MTProtoSender) {
   //   if (!localStorage.getItem(lsKey)) {
   //     let content = "";
@@ -31,6 +33,6 @@ export class Client extends MTKrutoClient {
   //   } else {
   //     log.warn("the security module is not active");
   //   }
-  //   return super.(request, sender);
+  //   return super.invoke(request, sender);
   // }
 }

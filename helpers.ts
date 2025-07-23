@@ -1,6 +1,7 @@
-import { Client, MessageDocument } from "$mtkruto";
+import { MessageDocument } from "$mtkruto";
 import { Event } from "./handlers/mod.ts";
 import { fmt, type Stringable } from "./deps.ts";
+import { Client } from "./client.ts";
 
 export async function updateMessage(
   client: Client,

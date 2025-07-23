@@ -4,12 +4,15 @@ import env from "./env.ts";
 import modules from "./modules/mod.ts";
 import * as log from "@std/log";
 import { managerModule, ModuleManager } from "./module_manager.ts";
+import { replyFmt } from "./deps.ts";
 
 const client = new Client({
   apiId: env.APP_ID,
   apiHash: env.APP_HASH,
   authString: env.STRING_SESSION,
 });
+
+client.use(replyFmt);
 
 const manager = new ModuleManager(client);
 

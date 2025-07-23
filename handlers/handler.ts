@@ -1,7 +1,8 @@
-import { Client as MTKrutoClient, Context, WithFilter } from "$mtkruto";
+import { WithFilter } from "$mtkruto";
+import type { Client, XorContext } from "../client.ts";
 
-export type NewMessageEvent = WithFilter<Context, "message:text">;
-export type EditedMessageEvent = WithFilter<Context, "editedMessage:text">;
+export type NewMessageEvent = WithFilter<XorContext, "message:text">;
+export type EditedMessageEvent = WithFilter<XorContext, "editedMessage:text">;
 
 export const End = Symbol();
 
@@ -10,7 +11,7 @@ export type Event = NewMessageEvent | EditedMessageEvent;
 export type HandleFuncResult = Promise<void | typeof End>;
 
 export interface HandlerFuncParams {
-  client: MTKrutoClient;
+  client: Client;
   event: Event;
 }
 

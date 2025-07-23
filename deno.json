@@ -5,7 +5,7 @@
   "imports": {
     "$mtkruto": "https://deno.land/x/mtkruto@0.67.1/mod.ts",
     "$mtkruto-filters": "https://deno.land/x/mtkruto@0.67.1/client/0_filters.ts",
-    "@mtkruto/parse": "jsr:@mtkruto/parse@^0.0.2",
+    "$mtkruto/parse": "https://ghc.deno.dev/MTKruto/parse@0.0.2/mod.ts",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
     "@std/fs": "jsr:@std/fs@^1.0.19",
     "@std/log": "jsr:@std/log@^0.224.14",

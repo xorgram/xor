@@ -17,7 +17,7 @@ export interface MessageHandlerParams {
 export class MessageHandler<T extends object> extends Handler {
   constructor(
     public func: MessageHandlerFunc<T>,
-    public params?: MessageHandlerParams
+    public params?: MessageHandlerParams,
   ) {
     super();
   }
