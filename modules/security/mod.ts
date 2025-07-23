@@ -6,17 +6,17 @@ import {
   Module,
   updateMessage,
 } from "$xor";
-import * as log from "std/log/mod.ts";
+import * as log from "@std/log";
 import { lsKey, sensitives } from "../../client.ts";
 
 const security: Module = {
   name: "security",
   handlers: [
-    new MessageHandler(async ({ event }) => {
+    new MessageHandler(async ({ event, client }) => {
       let toDelete = false;
-      if (!event.message.text.startsWith("signore")) {
+      if (!event.msg.text.startsWith("signore")) {
         for (const sensitive of sensitives) {
-          if (sensitive.test(event.message.message)) {
+          if (sensitive.test(event.msg.text)) {
             toDelete = true;
             break;
           }
@@ -24,28 +24,30 @@ const security: Module = {
       }
       if (toDelete) {
         if (!localStorage.getItem(lsKey)) {
-          await event.message.delete();
-          log.info(`deleted a sensitive message in ${event.chatId}`);
+          await client.deleteMessage(event.chat.id, event.msg.id, {
+            onlyForMe: false,
+          });
+          log.info(`deleted a sensitive message in ${event.chat.id}`);
         } else {
-          log.warning("the security module is not active");
+          log.warn("the security module is not active");
         }
       }
     }),
-    new CommandHandler("sactivate", async ({ event }) => {
+    new CommandHandler("sactivate", async ({ event, client }) => {
       let text = "Already active.";
       if (localStorage.getItem(lsKey)) {
         localStorage.removeItem("deactivate_security");
         text = "Reactivated.";
       }
-      await updateMessage(event, text);
+      await updateMessage(client, event, text);
     }),
-    new CommandHandler("sdeactivate", async ({ event }) => {
+    new CommandHandler("sdeactivate", async ({ event, client }) => {
       let text = "Already deactivated.";
       if (!localStorage.getItem(lsKey)) {
         localStorage.setItem(lsKey, "1");
         text = "Deactivated.";
       }
-      await updateMessage(event, text);
+      await updateMessage(client, event, text);
     }),
   ],
   help: fmt`${bold("Introduction")}
