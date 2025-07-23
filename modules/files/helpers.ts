@@ -1,52 +1,52 @@
-import { Api } from "$grm";
+import { isMessageType, Message } from "$mtkruto";
 
-type Nullable<T> = T | null;
-
-export function parseAttributes(attrs: Api.TypeDocumentAttribute[]) {
-  let attrAnimated: Nullable<Api.DocumentAttributeAnimated> = null;
-  let attrAudio: Nullable<Api.DocumentAttributeAudio> = null;
-  let attrFilename: Nullable<Api.DocumentAttributeFilename> = null;
-  let attrHasStickers: Nullable<Api.DocumentAttributeHasStickers> = null;
-  let attrImageSize: Nullable<Api.DocumentAttributeImageSize> = null;
-  let attrSticker: Nullable<Api.DocumentAttributeSticker> = null;
-  let attrVideo: Nullable<Api.DocumentAttributeVideo> = null;
-  for (const attr of attrs) {
-    if (attr instanceof Api.DocumentAttributeAnimated) {
-      attrAnimated = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeAudio) {
-      attrAudio = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeFilename) {
-      attrFilename = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeHasStickers) {
-      attrHasStickers = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeImageSize) {
-      attrImageSize = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeSticker) {
-      attrSticker = attr;
-      continue;
-    }
-    if (attr instanceof Api.DocumentAttributeVideo) {
-      attrVideo = attr;
-      continue;
-    }
+// Accepts Api.Message or a compatible type
+export function extractFileInfo(
+  message: Message
+): { fileId: string; filename?: string } | null {
+  if (isMessageType(message, "photo") && message.photo) {
+    return {
+      fileId: message.photo.fileId,
+      filename: "photo_" + message.photo.fileId.toString() + ".png",
+    };
   }
-  return {
-    attrAnimated,
-    attrAudio,
-    attrFilename,
-    attrHasStickers,
-    attrImageSize,
-    attrSticker,
-    attrVideo,
-  };
+  if (isMessageType(message, "document") && message.document) {
+    if (message.document.fileName) {
+      return {
+        fileId: message.document.fileId,
+        filename: message.document.fileName,
+      };
+    } else if (message.document.mimeType) {
+      const mime = message.document.mimeType;
+      if (mime.includes("video")) {
+        return {
+          fileId: message.document.fileId,
+          filename:
+            "video_" + message.document.fileId + "." + mime.split("/")[1],
+        };
+      }
+      if (mime.includes("audio")) {
+        return {
+          fileId: message.document.fileId,
+          filename:
+            "audio_" + message.document.fileId + "." + mime.split("/")[1],
+        };
+      }
+      return { fileId: message.document.fileId };
+    }
+    return { fileId: message.document.fileId };
+  }
+  if (isMessageType(message, "audio") && message.audio) {
+    return {
+      fileId: message.audio.fileId,
+      filename: "audio_" + message.audio.fileId,
+    };
+  }
+  if (isMessageType(message, "video") && message.video) {
+    return {
+      fileId: message.video.fileId,
+      filename: "video_" + message.video.fileId,
+    };
+  }
+  return null;
 }
